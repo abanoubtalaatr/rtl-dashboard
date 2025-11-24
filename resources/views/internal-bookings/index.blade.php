@@ -1,0 +1,224 @@
+@extends('layouts.app')
+
+@section('title', 'الحجوزات الداخلية')
+
+@section('content_header')
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="m-0">
+            <i class="fas fa-calendar-alt mr-2"></i>
+            الحجوزات الداخلية
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent m-0 p-0">
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
+                <li class="breadcrumb-item active">الحجوزات الداخلية</li>
+            </ol>
+        </nav>
+    </div>
+@stop
+
+@section('page_content')
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="card-title">قائمة الحجوزات الداخلية</h3>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a href="{{ route('internal-bookings.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> إضافة حجز داخلي جديد
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="GET" action="{{ route('internal-bookings.index') }}" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-default" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <input type="text" name="search" class="form-control" 
+                                           placeholder="البحث باسم الغرفة أو السائق" 
+                                           value="{{ request('search') }}">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">#</th>
+                                    <th>اسم الغرفة</th>
+                                    <th>السائق</th>
+                                    <th>نوع السيارة</th>
+                                    <th>التشغيلة</th>
+                                    <th>من تاريخ</th>
+                                    <th>إلى تاريخ</th>
+                                    <th>السعر</th>
+                                    <th>نوع الدفع</th>
+                                    <th style="width: 200px;" class="text-center">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($bookings as $booking)
+                                    <tr>
+                                        <td><strong>{{ $booking->id }}</strong></td>
+                                        <td>
+                                            <i class="fas fa-door-open text-info mr-2"></i>
+                                            <strong>{{ $booking->room_name }}</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="fas fa-users mr-1"></i>
+                                                {{ $booking->number_of_people }} فرد
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-user-tie text-primary mr-2"></i>
+                                            {{ $booking->driver->name ?? '-' }}
+                                            @if($booking->return_driver_id && $booking->return_driver_id != $booking->driver_id)
+                                                <br>
+                                                <small class="text-muted">
+                                                    العودة: {{ $booking->returnDriver->name }}
+                                                </small>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info">
+                                                {{ $booking->carType->name ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small>
+                                                <i class="fas fa-map-marker-alt text-success mr-1"></i>
+                                                {{ $booking->departureFromLocation->name ?? '-' }}
+                                                <i class="fas fa-arrow-left mx-1"></i>
+                                                {{ $booking->departureToLocation->name ?? '-' }}
+                                            </small>
+                                        </td>
+                                        <td>{{ $booking->booking_from->format('Y-m-d H:i') }}</td>
+                                        <td>{{ $booking->booking_to->format('Y-m-d H:i') }}</td>
+                                        <td>
+                                            <strong>{{ number_format($booking->booking_price, 2) }}</strong>
+                                            <small>{{ $booking->currency->symbol ?? '' }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-{{ $booking->payment_type === 'cash' ? 'success' : ($booking->payment_type === 'visa' ? 'primary' : 'warning') }}">
+                                                {{ $booking->payment_type_label }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('internal-bookings.show', $booking) }}"
+                                                   class="btn btn-info btn-sm" title="عرض">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                        
+                                                <a href="{{ route('internal-bookings.edit', $booking) }}"
+                                                   class="btn btn-warning btn-sm" title="تعديل">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                        
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm delete-booking"
+                                                        data-id="{{ $booking->id }}"
+                                                        data-name="{{ $booking->room_name }}"
+                                                        title="حذف">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center py-5">
+                                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">لا توجد حجوزات داخلية</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center">
+                        {{ $bookings->links() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Form -->
+    <form id="delete-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+@stop
+
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.delete-booking').forEach(button => {
+                button.addEventListener('click', function() {
+                    const bookingId = this.getAttribute('data-id');
+                    const bookingName = this.getAttribute('data-name');
+                    
+                    Swal.fire({
+                        title: 'هل أنت متأكد؟',
+                        text: `هل تريد حذف حجز الغرفة "${bookingName}"؟`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#f5576c',
+                        cancelButtonColor: '#667eea',
+                        confirmButtonText: '<i class="fas fa-trash mr-1"></i> نعم، احذف',
+                        cancelButtonText: '<i class="fas fa-times mr-1"></i> إلغاء',
+                        reverseButtons: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'btn btn-danger mx-2',
+                            cancelButton: 'btn btn-secondary mx-2'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const form = document.getElementById('delete-form');
+                            form.action = `/internal-bookings/${bookingId}`;
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@stop
+
