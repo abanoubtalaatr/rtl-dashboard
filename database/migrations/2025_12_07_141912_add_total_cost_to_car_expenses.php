@@ -11,7 +11,9 @@ return new class extends Migration
     {
         // 1. أولاً: أضف العمود الجديد
         Schema::table('car_expenses', function (Blueprint $table) {
-            $table->decimal('total_cost', 12, 2)->default(0)->after('description');
+            if (!Schema::hasColumn('car_expenses', 'total_cost')) {
+                $table->decimal('total_cost', 12, 2)->default(0)->after('description');
+            }
         });
 
         // 2. ثانيًا: املأ القيم للسجلات الموجودة مسبقًا
@@ -31,7 +33,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('car_expenses', function (Blueprint $table) {
-            $table->dropColumn('total_cost');
+            if (Schema::hasColumn('car_expenses', 'total_cost')) {
+                $table->dropColumn('total_cost');
+            }
         });
     }
 };
