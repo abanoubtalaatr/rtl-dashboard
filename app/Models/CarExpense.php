@@ -7,52 +7,71 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CarExpense extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // App\Models\CarExpense.php
     protected $fillable = [
         'car_id',
-        'type',
+        'items',
         'description',
-        'cost',
+        'total_cost', // الآن آمن تمامًا
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'cost' => 'decimal:2',
+        'items' => 'array',
+        'total_cost' => 'decimal:2',
     ];
 
-    /**
-     * Get the car that owns the expense.
-     */
+    // App\Models\CarExpense.php
+
+    protected static function booted()
+    {
+        static::saving(function ($expense) {
+            if (is_array($expense->items)) {
+                $expense->total_cost = collect($expense->items)
+                    ->sum(fn ($item) => (float) ($item['cost'] ?? 0));
+            } else {
+                $expense->total_cost = 0;
+            }
+        });
+    }
+
+    // احذف الـ accessor إذا أردت (لأن العمود موجود الآن)
+    // أو اتركه كـ fallback
+    public function getTotalCostAttribute($value)
+    {
+        if ($value !== null) {
+            return (float) $value;
+        }
+
+        return collect($this->items)->sum(fn ($item) => (float) ($item['cost'] ?? 0));
+    }
+
     public function car(): BelongsTo
     {
         return $this->belongsTo(Car::class);
     }
 
-    /**
-     * Get type options.
-     */
-    public static function getTypeOptions(): array
+    public static function typeOptions(): array
     {
         return [
-            'fix' => 'إصلاح',
             'fuel' => 'وقود',
+            'spare_parts' => 'قطع غيار',
+            'oil_change' => 'غيار زيت',
+            'maintenance' => 'صيانة',
+            'expense_traffic' => 'مصاريف مرورية',
+            'traffic_fees' => 'كرتات مرورية',
+            'laundry' => 'غسيل',
         ];
     }
 
-    /**
-     * Get the Arabic type label.
-     */
-    public function getTypeLabelAttribute(): string
+    public function getTypeLabelsAttribute(): string
     {
-        $types = self::getTypeOptions();
-        return $types[$this->type] ?? $this->type;
+        if (empty($this->items)) {
+            return '-';
+        }
+
+        return collect($this->items)
+            ->pluck('type')
+            ->map(fn ($key) => self::typeOptions()[$key] ?? $key)
+            ->implode('، ');
     }
 }

@@ -36,4 +36,3 @@ class RegisterController extends Controller
         return redirect(config('adminlte.dashboard_url', 'home'));
     }
 }
-

@@ -26,4 +26,14 @@ class StoreCarTypeRequest extends FormRequest
             'description' => 'الوصف',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'حقل :attribute مطلوب.',
+            'string' => 'حقل :attribute يجب أن يكون نص.',
+            'max' => 'حقل :attribute يجب ألا يتجاوز :max حرف.',
+            'unique' => ':attribute موجود مسبقاً.',
+        ];
+    }
 }

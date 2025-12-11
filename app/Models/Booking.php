@@ -42,6 +42,12 @@ class Booking extends Model
         'departure_route',
         'return_route',
         'created_by',
+        'returned',
+        'returned_at',
+        'return_car_id',
+        'has_return',
+        'supervisor_id',
+        'commission_for_driver',
     ];
 
     /**
@@ -55,6 +61,8 @@ class Booking extends Model
         'cost' => 'decimal:2',
         'booking_price' => 'decimal:2',
         'return_time' => 'datetime',
+        'returned' => 'boolean',
+        'returned_at' => 'datetime',
     ];
 
     /**
@@ -154,6 +162,22 @@ class Booking extends Model
     }
 
     /**
+     * Alias for departureFromLocation (for reports).
+     */
+    public function fromLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'departure_from_location_id');
+    }
+
+    /**
+     * Alias for departureToLocation (for reports).
+     */
+    public function toLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'departure_to_location_id');
+    }
+
+    /**
      * Get type options.
      */
     public static function getTypeOptions(): array
@@ -173,6 +197,8 @@ class Booking extends Model
             'cash' => 'كاش',
             'visa' => 'فيزا',
             'credit' => 'أجل',
+            'rooms' => 'غرف',
+            'free' => 'فري',
         ];
     }
 
@@ -182,6 +208,7 @@ class Booking extends Model
     public function getTypeLabelAttribute(): string
     {
         $types = self::getTypeOptions();
+
         return $types[$this->type] ?? $this->type;
     }
 
@@ -191,7 +218,40 @@ class Booking extends Model
     public function getPaymentTypeLabelAttribute(): string
     {
         $types = self::getPaymentTypeOptions();
+
         return $types[$this->payment_type] ?? $this->payment_type;
+    }
+
+    /**
+     * Get date accessor (from booking_from).
+     */
+    public function getDateAttribute()
+    {
+        return $this->booking_from ? $this->booking_from->startOfDay() : null;
+    }
+
+    /**
+     * Get time accessor (from booking_from).
+     */
+    public function getTimeAttribute()
+    {
+        return $this->booking_from ? $this->booking_from->format('H:i') : null;
+    }
+
+    /**
+     * Get price accessor (from booking_price).
+     */
+    public function getPriceAttribute()
+    {
+        return $this->booking_price;
+    }
+
+    /**
+     * Get notes accessor (returns empty string if not set).
+     */
+    public function getNotesAttribute()
+    {
+        return $this->attributes['notes'] ?? '';
     }
 
     /**
@@ -208,5 +268,59 @@ class Booking extends Model
     public function scopeExternal($query)
     {
         return $query->where('type', 'external');
+    }
+
+    /**
+     * Scope a query to only include returned bookings.
+     */
+    public function scopeReturned($query)
+    {
+        return $query->where('returned', true);
+    }
+
+    /**
+     * Scope a query to only include unreturned bookings.
+     */
+    public function scopeUnreturned($query)
+    {
+        return $query->where('returned', false);
+    }
+
+    /**
+     * Mark the booking as returned.
+     */
+    public function markAsReturned(): bool
+    {
+        return $this->update([
+            'returned' => true,
+            'returned_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark the booking as not returned.
+     */
+    public function markAsNotReturned(): bool
+    {
+        return $this->update([
+            'returned' => false,
+            'returned_at' => null,
+        ]);
+    }
+
+    /**
+     * Get the return car for the booking.
+     */
+    public function returnCar(): BelongsTo
+    {
+        return $this->belongsTo(Car::class, 'return_car_id');
+    }
+
+    /**
+     * Get the supervisor for the booking.
+     */
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(Supervisor::class, 'supervisor_id');
     }
 }

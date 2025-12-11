@@ -30,21 +30,21 @@ class CarAvailabilityController extends Controller
         $departureConflict = Booking::where('car_id', $carId)
             ->where('id', '!=', $request->input('booking_id', 0)) // استثناء الحجز الحالي عند التعديل
             ->where(function ($query) use ($bookingFrom, $departureEnd) {
-                $query->where(function ($q) use ($bookingFrom, $departureEnd) {
+                $query->where(function ($q) use ($bookingFrom) {
                     // الحجز الحالي يبدأ أثناء حجز موجود
                     $q->where('booking_from', '<=', $bookingFrom)
-                      ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) >= ?', [$bookingFrom]);
+                        ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) >= ?', [$bookingFrom]);
                 })
-                ->orWhere(function ($q) use ($bookingFrom, $departureEnd) {
-                    // الحجز الحالي ينتهي أثناء حجز موجود
-                    $q->where('booking_from', '<=', $departureEnd)
-                      ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) >= ?', [$departureEnd]);
-                })
-                ->orWhere(function ($q) use ($bookingFrom, $departureEnd) {
-                    // الحجز الحالي يغطي حجز موجود بالكامل
-                    $q->where('booking_from', '>=', $bookingFrom)
-                      ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) <= ?', [$departureEnd]);
-                });
+                    ->orWhere(function ($q) use ($departureEnd) {
+                        // الحجز الحالي ينتهي أثناء حجز موجود
+                        $q->where('booking_from', '<=', $departureEnd)
+                            ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) >= ?', [$departureEnd]);
+                    })
+                    ->orWhere(function ($q) use ($bookingFrom, $departureEnd) {
+                        // الحجز الحالي يغطي حجز موجود بالكامل
+                        $q->where('booking_from', '>=', $bookingFrom)
+                            ->whereRaw('DATE_ADD(booking_from, INTERVAL trip_duration MINUTE) <= ?', [$departureEnd]);
+                    });
             })
             ->first();
 
@@ -60,7 +60,7 @@ class CarAvailabilityController extends Controller
                     $conflictEnd->format('H:i'),
                     $departureConflict->room_name
                 ),
-                'conflict' => 'departure'
+                'conflict' => 'departure',
             ]);
         }
 
@@ -68,21 +68,21 @@ class CarAvailabilityController extends Controller
         $returnConflict = Booking::where('car_id', $carId)
             ->where('id', '!=', $request->input('booking_id', 0))
             ->where(function ($query) use ($bookingTo, $returnEnd) {
-                $query->where(function ($q) use ($bookingTo, $returnEnd) {
+                $query->where(function ($q) use ($bookingTo) {
                     // العودة تبدأ أثناء حجز موجود
                     $q->where('booking_to', '<=', $bookingTo)
-                      ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) >= ?', [$bookingTo]);
+                        ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) >= ?', [$bookingTo]);
                 })
-                ->orWhere(function ($q) use ($bookingTo, $returnEnd) {
-                    // العودة تنتهي أثناء حجز موجود
-                    $q->where('booking_to', '<=', $returnEnd)
-                      ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) >= ?', [$returnEnd]);
-                })
-                ->orWhere(function ($q) use ($bookingTo, $returnEnd) {
-                    // العودة تغطي حجز موجود بالكامل
-                    $q->where('booking_to', '>=', $bookingTo)
-                      ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) <= ?', [$returnEnd]);
-                });
+                    ->orWhere(function ($q) use ($returnEnd) {
+                        // العودة تنتهي أثناء حجز موجود
+                        $q->where('booking_to', '<=', $returnEnd)
+                            ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) >= ?', [$returnEnd]);
+                    })
+                    ->orWhere(function ($q) use ($bookingTo, $returnEnd) {
+                        // العودة تغطي حجز موجود بالكامل
+                        $q->where('booking_to', '>=', $bookingTo)
+                            ->whereRaw('DATE_ADD(booking_to, INTERVAL return_duration_minutes MINUTE) <= ?', [$returnEnd]);
+                    });
             })
             ->first();
 
@@ -98,13 +98,13 @@ class CarAvailabilityController extends Controller
                     $conflictEnd->format('H:i'),
                     $returnConflict->room_name
                 ),
-                'conflict' => 'return'
+                'conflict' => 'return',
             ]);
         }
 
         return response()->json([
             'available' => true,
-            'message' => 'السيارة متاحة'
+            'message' => 'السيارة متاحة',
         ]);
     }
 }

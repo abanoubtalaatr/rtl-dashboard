@@ -49,11 +49,20 @@
                 'description' => 'إجمالي قاعدة العملاء'
             ],
             [
-                'label' => 'الحجوزات',
-                'value' => $stats['bookings'] ?? 0,
+                'label' => 'الحجوزات الداخلية',
+                'value' => $stats['internal_bookings'] ?? 0,
                 'icon' => 'fas fa-calendar-check',
                 'gradient' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'route' => 'bookings.index',
+                'route' => 'internal-bookings.index',
+                'description' => 'إجمالي الحجوزات'
+            ],
+
+            [
+                'label' => 'الحجوزات الخارجية',
+                'value' => $stats['external_bookings'] ?? 0,
+                'icon' => 'fas fa-calendar-check',
+                'gradient' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'route' => 'external-bookings.index',
                 'description' => 'إجمالي الحجوزات'
             ],
             [
@@ -128,7 +137,7 @@
                         <div class="col-md-4 mb-3">
                             <div class="info-box-content">
                                 <span class="info-box-text text-muted">الحجوزات النشطة</span>
-                                <span class="info-box-number h4">{{ $stats['bookings'] }}</span>
+                                <span class="info-box-number h4">{{ $stats['internal_bookings'] + $stats['external_bookings'] }}</span>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -171,26 +180,9 @@
     </div>
 @endsection
 
-@section('css')
+{{-- @section('css') --}}
     <style>
-        /* Dashboard Header Enhancement */
-        .dashboard-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin: -15px -15px 20px -15px;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .dashboard-header h1 {
-            color: white;
-            font-weight: 700;
-        }
-
-        .dashboard-header .text-muted {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
+      
 
         /* Enhanced Statistics Cards */
         .stat-card {
@@ -378,5 +370,5 @@
             text-decoration: none !important;
         }
     </style>
-@endsection
+{{-- @endsection --}}
 

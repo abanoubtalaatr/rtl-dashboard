@@ -86,10 +86,10 @@
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('drivers.show', $driver) }}"
-                                               class="btn btn-info btn-sm me-1 mx-1" title="عرض">
-                                                <i class="fas fa-eye"></i>
-                                                عرض
+                                            <a href="{{ route('drivers.salaries.index', $driver) }}"
+                                               class="btn btn-info btn-sm me-1 mx-1" title="الرواتب">
+                                                <i class="fas fa-user-tie"></i>
+                                                الرواتب
                                             </a>
                                     
                                             <a href="{{ route('drivers.edit', $driver) }}"

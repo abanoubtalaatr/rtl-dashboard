@@ -25,14 +25,14 @@ class UpdateInternalBookingRequest extends FormRequest
             'car_id' => 'required|exists:cars,id',
             'car_type_id' => 'required|exists:car_types,id',
             'room_name' => 'required|string|max:255',
-            'payment_type' => 'required|in:cash,visa,credit',
+            'payment_type' => 'required',
             'number_of_people' => 'required|integer|min:1',
             'driver_id' => 'required|exists:drivers,id',
             'booking_from' => 'required|date',
             'trip_duration' => 'required|integer|min:1',
             'company_id' => 'required|exists:companies,id',
-            'departure_from' => 'required|string|max:255',
-            'departure_to' => 'required|string|max:255',
+            'departure_from' => 'nullable|string|max:255',
+            'departure_to' => 'nullable|string|max:255',
             'return_driver_id' => 'nullable|exists:drivers,id',
             'booking_to' => 'required|date|after:booking_from',
             'return_duration_minutes' => 'required|integer|min:1',
@@ -41,6 +41,14 @@ class UpdateInternalBookingRequest extends FormRequest
             'cost' => 'required|numeric|min:0',
             'booking_price' => 'required|numeric|min:0',
             'currency_id' => 'required|exists:currencies,id',
+            'departure_from_location_id' => 'nullable',
+            'departure_to_location_id' => 'nullable',
+            'return_from_location_id' => 'nullable',
+            'return_to_location_id' => 'nullable',
+            'supervisor_id' => 'required|exists:supervisors,id',
+            'commission_for_driver' => 'required|numeric|min:0',
+            'return_car_id' => 'required|exists:cars,id',
+            'has_return' => 'required|boolean',
         ];
     }
 
@@ -54,7 +62,7 @@ class UpdateInternalBookingRequest extends FormRequest
         return [
             'car_id' => 'السيارة',
             'car_type_id' => 'نوع السيارة',
-            'room_name' => 'رقم الغرفة',
+            'room_name' => 'اسم الغرفة',
             'payment_type' => 'نوع الدفع',
             'number_of_people' => 'عدد الأفراد',
             'driver_id' => 'السائق',
@@ -71,6 +79,32 @@ class UpdateInternalBookingRequest extends FormRequest
             'cost' => 'التكلفة',
             'booking_price' => 'سعر الحجز',
             'currency_id' => 'العملة',
+            'supervisor_id' => 'المشرف',
+            'commission_for_driver' => 'عمولة السائق',
+            'return_car_id' => 'السيارة العودة',
+            'has_return' => 'هل هو عودة',
+        ];
+    }
+
+    /**
+     * Get custom validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'required' => 'حقل :attribute مطلوب.',
+            'exists' => ':attribute المحدد غير صحيح.',
+            'date' => 'حقل :attribute يجب أن يكون تاريخ صحيح.',
+            'after' => 'يجب أن يكون :attribute بعد :date.',
+            'integer' => 'حقل :attribute يجب أن يكون رقم صحيح.',
+            'numeric' => 'حقل :attribute يجب أن يكون رقم.',
+            'min.numeric' => 'حقل :attribute يجب أن يكون على الأقل :min.',
+            'min.integer' => 'حقل :attribute يجب أن يكون على الأقل :min.',
+            'max.string' => 'حقل :attribute يجب ألا يتجاوز :max حرف.',
+            'in' => ':attribute المحدد غير صحيح.',
+            'booking_to.after' => 'يجب أن يكون تاريخ ووقت العودة بعد التاريخ والوقت.',
         ];
     }
 }

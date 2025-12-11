@@ -20,12 +20,8 @@
 
                         <div class="form-group">
                             <label for="name">الاسم <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" 
-                                   name="name" 
-                                   value="{{ old('name') }}" 
-                                   required>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                                name="name" value="{{ old('name') }}" required>
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -35,12 +31,8 @@
 
                         <div class="form-group">
                             <label for="mobile">رقم الجوال <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('mobile') is-invalid @enderror" 
-                                   id="mobile" 
-                                   name="mobile" 
-                                   value="{{ old('mobile') }}" 
-                                   required>
+                            <input type="text" class="form-control @error('mobile') is-invalid @enderror" id="mobile"
+                                name="mobile" value="{{ old('mobile') }}" required>
                             @error('mobile')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -50,10 +42,8 @@
 
                         <div class="form-group">
                             <label for="status">الحالة <span class="text-danger">*</span></label>
-                            <select class="form-control @error('status') is-invalid @enderror" 
-                                    id="status" 
-                                    name="status" 
-                                    required>
+                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status"
+                                required>
                                 <option value="">اختر الحالة</option>
                                 <option value="on_break" {{ old('status') == 'on_break' ? 'selected' : '' }}>
                                     في الاستراحة
@@ -71,13 +61,19 @@
 
                         <div class="form-group">
                             <label for="license_number">رقم الرخصة <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('license_number') is-invalid @enderror" 
-                                   id="license_number" 
-                                   name="license_number" 
-                                   value="{{ old('license_number') }}" 
-                                   required>
+                            <input type="text" class="form-control @error('license_number') is-invalid @enderror"
+                                id="license_number" name="license_number" value="{{ old('license_number') }}" required>
                             @error('license_number')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="national_id">رقم البطاقة الوطنية <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('national_id') is-invalid @enderror"
+                                id="national_id" name="national_id" value="{{ old('national_id') }}" required>
+                            @error('national_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -87,11 +83,8 @@
                         <div class="form-group">
                             <label for="license_image">صورة الرخصة</label>
                             <div class="custom-file">
-                                <input type="file" 
-                                       class="custom-file-input @error('license_image') is-invalid @enderror" 
-                                       id="license_image" 
-                                       name="license_image"
-                                       accept="image/*">
+                                <input type="file" class="custom-file-input @error('license_image') is-invalid @enderror"
+                                    id="license_image" name="license_image" accept="image/*">
                                 <label class="custom-file-label" for="license_image">اختر صورة</label>
                             </div>
                             @error('license_image')
@@ -99,7 +92,24 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
-                            <small class="form-text text-muted">الأنواع المسموحة: jpeg, png, jpg, gif - الحد الأقصى: 2 ميجابايت</small>
+                            <small class="form-text text-muted">الأنواع المسموحة: jpeg, png, jpg, gif - الحد الأقصى: 2
+                                ميجابايت</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="national_images">صور البطاقة الوطنية</label>
+                            <div class="custom-file">
+                                <input type="file" 
+                                    class="custom-file-input @error('national_images') is-invalid @enderror"
+                                    id="national_images" name="national_images[]" accept="image/*" multiple>
+                                <label class="custom-file-label" for="national_images">اختر صور متعددة</label>
+                            </div>
+                            @error('national_images')
+                                <span class="invalid-feedback d-block" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            <small class="form-text text-muted">الأنواع المسموحة: jpeg, png, jpg, gif - الحد الأقصى: 2 ميجابايت لكل صورة</small>
                         </div>
 
                         <div class="form-group">

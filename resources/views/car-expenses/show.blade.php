@@ -30,7 +30,39 @@
                         </tr>
                         <tr>
                             <th>النوع</th>
-                            <td>{{ $carExpense->type_label }}</td>
+                            <td>
+                                @if(is_array($carExpense->type))
+                                    @foreach($carExpense->type as $typeKey)
+                                        @php
+                                            $typeOptions = \App\Models\CarExpense::getTypeOptions();
+                                            $typeLabel = $typeOptions[$typeKey] ?? $typeKey;
+                                        @endphp
+                                        @if($typeKey === 'fuel')
+                                            <span class="badge badge-danger badge-lg mr-1">
+                                                <i class="fas fa-gas-pump"></i> {{ $typeLabel }}
+                                            </span>
+                                        @elseif($typeKey === 'spare_parts')
+                                            <span class="badge badge-info badge-lg mr-1">
+                                                <i class="fas fa-cogs"></i> {{ $typeLabel }}
+                                            </span>
+                                        @elseif($typeKey === 'oil_change')
+                                            <span class="badge badge-warning badge-lg mr-1">
+                                                <i class="fas fa-oil-can"></i> {{ $typeLabel }}
+                                            </span>
+                                        @elseif($typeKey === 'maintenance')
+                                            <span class="badge badge-success badge-lg mr-1">
+                                                <i class="fas fa-tools"></i> {{ $typeLabel }}
+                                            </span>
+                                        @else
+                                            <span class="badge badge-secondary badge-lg mr-1">
+                                                {{ $typeLabel }}
+                                            </span>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <span class="badge badge-secondary">-</span>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>الوصف</th>

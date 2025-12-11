@@ -54,6 +54,15 @@ class DriverController extends Controller
             $data['license_image'] = $request->file('license_image')->store('drivers', 'public');
         }
 
+        // Handle national ID images (multiple)
+        if ($request->hasFile('national_images')) {
+            $paths = [];
+            foreach ($request->file('national_images') as $image) {
+                $paths[] = $image->store('drivers/national', 'public');
+            }
+            $data['national_images'] = $paths;
+        }
+
         Driver::create($data);
 
         return redirect()->route('drivers.index')
@@ -92,6 +101,22 @@ class DriverController extends Controller
             $data['license_image'] = $request->file('license_image')->store('drivers', 'public');
         }
 
+        // Handle national ID images (multiple)
+        if ($request->hasFile('national_images')) {
+            // Delete old images if exist
+            if (is_array($driver->national_images)) {
+                foreach ($driver->national_images as $oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
+            $paths = [];
+            foreach ($request->file('national_images') as $image) {
+                $paths[] = $image->store('drivers/national', 'public');
+            }
+            $data['national_images'] = $paths;
+        }
+
         $driver->update($data);
 
         return redirect()->route('drivers.index')
@@ -106,6 +131,13 @@ class DriverController extends Controller
         // Delete image if exists
         if ($driver->license_image) {
             Storage::disk('public')->delete($driver->license_image);
+        }
+
+        // Delete national ID images if exist
+        if (is_array($driver->national_images)) {
+            foreach ($driver->national_images as $path) {
+                Storage::disk('public')->delete($path);
+            }
         }
 
         $driver->delete();

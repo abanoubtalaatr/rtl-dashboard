@@ -24,7 +24,8 @@ class UpdateCarExpenseRequest extends FormRequest
     {
         return [
             'car_id' => ['required', 'exists:cars,id'],
-            'type' => ['required', 'string', Rule::in(['fix', 'fuel'])],
+            'type' => ['required', 'array', 'min:1'],
+            'type.*' => ['required', 'string', Rule::in(['fuel', 'spare_parts', 'oil_change', 'maintenance', 'expense_traffic'])],
             'description' => ['nullable', 'string'],
             'cost' => ['required', 'numeric', 'min:0'],
         ];
@@ -40,8 +41,11 @@ class UpdateCarExpenseRequest extends FormRequest
         return [
             'car_id.required' => 'السيارة مطلوبة.',
             'car_id.exists' => 'السيارة المحددة غير موجودة.',
-            'type.required' => 'نوع المصروف مطلوب.',
-            'type.in' => 'نوع المصروف يجب أن يكون إصلاح أو وقود.',
+            'type.required' => 'يجب اختيار نوع واحد على الأقل.',
+            'type.array' => 'نوع المصروف غير صحيح.',
+            'type.min' => 'يجب اختيار نوع واحد على الأقل.',
+            'type.*.required' => 'نوع المصروف مطلوب.',
+            'type.*.in' => 'نوع المصروف المختار غير صحيح.',
             'cost.required' => 'التكلفة مطلوبة.',
             'cost.numeric' => 'التكلفة يجب أن تكون رقماً.',
             'cost.min' => 'التكلفة يجب أن تكون أكبر من أو تساوي صفر.',

@@ -63,18 +63,43 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th style="width: 80px;">#</th>
                                 <th>الاسم</th>
                                 <th>البريد الإلكتروني</th>
-                                <th>الإجراءات</th>
+                                <th style="width: 180px;">الصلاحيات</th>
+                                <th style="width: 220px;" class="text-center">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($users as $user)
                                 <tr>
-                                    <td>{{ $user->id }}</td>
-                                    <td>{{ $user->name }}</td>
+                                    <td><strong>{{ $user->id }}</strong></td>
+                                    <td>
+                                        @if($user->isSuperAdmin())
+                                            <i class="fas fa-crown text-warning mr-1"></i>
+                                        @elseif($user->isAdmin())
+                                            <i class="fas fa-user-shield text-info mr-1"></i>
+                                        @else
+                                            <i class="fas fa-user text-secondary mr-1"></i>
+                                        @endif
+                                        {{ $user->name }}
+                                    </td>
                                     <td>{{ $user->email }}</td>
+                                    <td>
+                                        @if($user->isSuperAdmin())
+                                            <span class="badge badge-warning badge-lg">
+                                                <i class="fas fa-crown"></i> {{ $user->role_label }}
+                                            </span>
+                                        @elseif($user->isAdmin())
+                                            <span class="badge badge-info badge-lg">
+                                                <i class="fas fa-user-shield"></i> {{ $user->role_label }}
+                                            </span>
+                                        @else
+                                            <span class="badge badge-secondary badge-lg">
+                                                <i class="fas fa-user"></i> {{ $user->role_label }}
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('users.show', $user) }}"
@@ -102,7 +127,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">لا توجد بيانات</td>
+                                    <td colspan="5" class="text-center">لا توجد بيانات</td>
                                 </tr>
                             @endforelse
                         </tbody>

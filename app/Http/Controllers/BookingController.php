@@ -6,10 +6,10 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
 use App\Models\Car;
-use App\Models\Customer;
 use App\Models\Company;
-use App\Models\Driver;
 use App\Models\Currency;
+use App\Models\Customer;
+use App\Models\Driver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -50,12 +50,12 @@ class BookingController extends Controller
                 $q->whereHas('customer', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('company', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('driver', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('company', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('driver', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -100,6 +100,7 @@ class BookingController extends Controller
     public function show(Booking $booking): View
     {
         $booking->load(['customer', 'company', 'driver', 'car', 'currency']);
+
         return view('bookings.show', compact('booking'));
     }
 
@@ -137,5 +138,31 @@ class BookingController extends Controller
 
         return redirect()->route('bookings.index')
             ->with('success', 'تم حذف الحجز بنجاح.');
+    }
+
+    // app/Http/Controllers/BookingController.php
+
+    public function search(Request $request)
+    {
+
+        $query = Booking::query();
+
+        if ($request->filled('room')) {
+            $query->where('room_name', 'like', "%{$request->room}%");
+        }
+
+        if ($request->filled('date')) {
+            $date = $request->date;
+            $query->where(function ($q) use ($date) {
+                $q->where('type', 'internal')->whereDate('booking_from', '<=', $date)
+                    ->whereDate('booking_to', '>=', $date);
+            });
+        }
+
+        $bookings = $query->with(['driver', 'car', 'currency', 'company'])
+            ->limit(20)
+            ->get();
+
+        return response()->json($bookings);
     }
 }

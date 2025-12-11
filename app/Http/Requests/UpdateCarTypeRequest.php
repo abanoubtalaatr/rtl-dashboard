@@ -19,7 +19,7 @@ class UpdateCarTypeRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('car_types', 'name')->ignore($this->car_type)
+                Rule::unique('car_types', 'name')->ignore($this->car_type),
             ],
             'description' => 'nullable|string',
         ];
@@ -30,6 +30,16 @@ class UpdateCarTypeRequest extends FormRequest
         return [
             'name' => 'اسم نوع السيارة',
             'description' => 'الوصف',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'required' => 'حقل :attribute مطلوب.',
+            'string' => 'حقل :attribute يجب أن يكون نص.',
+            'max' => 'حقل :attribute يجب ألا يتجاوز :max حرف.',
+            'unique' => ':attribute موجود مسبقاً.',
         ];
     }
 }

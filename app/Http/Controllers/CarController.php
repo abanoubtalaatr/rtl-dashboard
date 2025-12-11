@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCarRequest;
 use App\Http\Requests\UpdateCarRequest;
 use App\Models\Car;
+use App\Models\CarType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -38,7 +39,9 @@ class CarController extends Controller
      */
     public function create(): View
     {
-        return view('cars.create');
+        $carTypes = CarType::all();
+
+        return view('cars.create', compact('carTypes'));
     }
 
     /**
@@ -57,6 +60,8 @@ class CarController extends Controller
      */
     public function show(Car $car): View
     {
+        $car->load('carType');
+
         return view('cars.show', compact('car'));
     }
 
@@ -65,7 +70,10 @@ class CarController extends Controller
      */
     public function edit(Car $car): View
     {
-        return view('cars.edit', compact('car'));
+        $car->load('carType');
+        $carTypes = CarType::all();
+
+        return view('cars.edit', compact('car', 'carTypes'));
     }
 
     /**
@@ -107,10 +115,10 @@ class CarController extends Controller
 
             foreach ($allCars as $car) {
                 $isAvailable = $car->isAvailable($from, $to);
-                
+
                 if ($availability === 'available' && $isAvailable) {
                     $filteredCars->push($car);
-                } elseif ($availability === 'not_available' && !$isAvailable) {
+                } elseif ($availability === 'not_available' && ! $isAvailable) {
                     $filteredCars->push($car);
                 }
             }

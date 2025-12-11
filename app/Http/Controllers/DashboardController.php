@@ -18,7 +18,8 @@ class DashboardController extends Controller
         $stats = [
             'cars' => Car::count(),
             'customers' => Customer::count(),
-            'bookings' => Booking::count(),
+            'internal_bookings' => Booking::where('type', 'internal')->count(),
+            'external_bookings' => Booking::where('type', 'external')->count(),
             'users' => User::count(),
             'clients' => Customer::count(),
             'companies' => Company::count(),
@@ -36,4 +37,3 @@ class DashboardController extends Controller
         return view('dashboard.index', compact('stats', 'greeting'));
     }
 }
-

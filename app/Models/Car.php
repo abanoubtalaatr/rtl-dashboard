@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Car extends Model
@@ -16,6 +17,7 @@ class Car extends Model
         'plate_number',
         'model',
         'color',
+        'car_type_id',
     ];
 
     /**
@@ -45,11 +47,19 @@ class Car extends Model
         $hasOverlappingBooking = $this->bookings()
             ->where(function ($query) use ($from, $to) {
                 $query->where('booking_from', '<', $to)
-                      ->where('booking_to', '>', $from);
+                    ->where('booking_to', '>', $from);
             })
             ->exists();
 
         // Car is available if there are no overlapping bookings
-        return !$hasOverlappingBooking;
+        return ! $hasOverlappingBooking;
+    }
+
+    /**
+     * Get the car type that owns the car.
+     */
+    public function carType(): BelongsTo
+    {
+        return $this->belongsTo(CarType::class);
     }
 }

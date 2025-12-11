@@ -17,7 +17,7 @@ class ResetPasswordController extends Controller
     /**
      * Display the password reset view for the given token.
      */
-    public function showResetForm(Request $request, string $token = null): View
+    public function showResetForm(Request $request, ?string $token = null): View
     {
         return view('auth.passwords.reset')->with([
             'token' => $token,
@@ -51,4 +51,3 @@ class ResetPasswordController extends Controller
             ->withErrors(['email' => __($status)]);
     }
 }
-

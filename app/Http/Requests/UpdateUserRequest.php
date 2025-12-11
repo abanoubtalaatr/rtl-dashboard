@@ -24,10 +24,12 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         $userId = $this->route('user')->id;
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', Password::min(8), 'confirmed'],
+            'role' => ['required', 'string', 'in:user,admin,super_admin'],
         ];
     }
 
@@ -45,6 +47,8 @@ class UpdateUserRequest extends FormRequest
             'email.unique' => 'البريد الإلكتروني موجود مسبقاً.',
             'password.min' => 'كلمة المرور يجب أن تكون على الأقل 8 أحرف.',
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
+            'role.required' => 'الصلاحيات مطلوبة.',
+            'role.in' => 'الصلاحيات المحددة غير صحيحة.',
         ];
     }
 }

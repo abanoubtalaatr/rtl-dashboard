@@ -86,6 +86,21 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="national_id">رقم البطاقة الوطنية <span class="text-danger">*</span></label>
+                            <input type="text" 
+                                   class="form-control @error('national_id') is-invalid @enderror" 
+                                   id="national_id" 
+                                   name="national_id" 
+                                   value="{{ old('national_id', $driver->national_id) }}" 
+                                   required>
+                            @error('national_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <label for="license_image">صورة الرخصة</label>
                             @if($driver->license_image)
                                 <div class="mb-2">
@@ -109,6 +124,39 @@
                                 </span>
                             @enderror
                             <small class="form-text text-muted">الأنواع المسموحة: jpeg, png, jpg, gif - الحد الأقصى: 2 ميجابايت</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="national_images">صور البطاقة الوطنية</label>
+                            @if($driver->national_images_urls)
+                                <div class="mb-2 d-flex flex-wrap">
+                                    @foreach($driver->national_images_urls as $url)
+                                        <div class="m-1 text-center">
+                                            <a href="{{ $url }}" target="_blank">
+                                                <img src="{{ $url }}" 
+                                                     alt="صورة البطاقة" 
+                                                     style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; padding: 3px;">
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <p class="text-muted small">الصور الحالية للبطاقة الوطنية</p>
+                            @endif
+                            <div class="custom-file">
+                                <input type="file" 
+                                       class="custom-file-input @error('national_images') is-invalid @enderror" 
+                                       id="national_images" 
+                                       name="national_images[]" 
+                                       accept="image/*"
+                                       multiple>
+                                <label class="custom-file-label" for="national_images">اختر صور جديدة (اختياري)</label>
+                            </div>
+                            @error('national_images')
+                                <span class="invalid-feedback d-block" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            <small class="form-text text-muted">الأنواع المسموحة: jpeg, png, jpg, gif - الحد الأقصى: 2 ميجابايت لكل صورة</small>
                         </div>
 
                         <div class="form-group">

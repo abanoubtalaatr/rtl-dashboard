@@ -33,6 +33,7 @@ class LocationController extends Controller
     public function create()
     {
         $types = Location::getTypeOptions();
+
         return view('locations.create', compact('types'));
     }
 
@@ -62,6 +63,7 @@ class LocationController extends Controller
     public function edit(Location $location)
     {
         $types = Location::getTypeOptions();
+
         return view('locations.edit', compact('location', 'types'));
     }
 

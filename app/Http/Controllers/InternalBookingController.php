@@ -10,6 +10,8 @@ use App\Models\CarType;
 use App\Models\Currency;
 use App\Models\Driver;
 use App\Models\Location;
+use App\Models\Supervisor;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,16 +28,22 @@ class InternalBookingController extends Controller
             'car',
             'carType',
             'currency',
-            'departureFromLocation',
-            'departureToLocation',
-            'returnFromLocation',
-            'returnToLocation',
-            'creator'
+            'creator',
         ])->internal();
 
+        // إذا لم يتم تحديد from_date أو to_date، فعرض حجوزات اليوم الحالي فقط بشكل افتراضي
+        $fromDate = $request->filled('from_date') ? $request->from_date : now()->toDateString();
+        $toDate = $request->filled('to_date') ? $request->to_date : now()->toDateString();
+
+        $query->whereDate('booking_from', '>=', $fromDate)
+            ->whereDate('booking_to', '<=', $toDate);
+
         // إذا كان المستخدم ليس super admin، يشوف حجوزاته فقط
-        if (!Auth::user()->isSuperAdmin()) {
+        if (! Auth::user()->isSuperAdmin()) {
             $query->where('created_by', Auth::id());
+        }
+        if ($request->filled('user_id')) {
+            $query->where('created_by', $request->user_id);
         }
 
         // Search functionality
@@ -50,8 +58,9 @@ class InternalBookingController extends Controller
         }
 
         $bookings = $query->latest()->paginate(15);
+        $users = User::get();
 
-        return view('internal-bookings.index', compact('bookings'));
+        return view('internal-bookings.index', compact('bookings', 'users'));
     }
 
     /**
@@ -66,6 +75,7 @@ class InternalBookingController extends Controller
         $locations = Location::all();
         $companies = \App\Models\Company::all();
         $paymentTypes = Booking::getPaymentTypeOptions();
+        $supervisors = Supervisor::all();
 
         return view('internal-bookings.create', compact(
             'drivers',
@@ -74,7 +84,8 @@ class InternalBookingController extends Controller
             'currencies',
             'locations',
             'companies',
-            'paymentTypes'
+            'paymentTypes',
+            'supervisors'
         ));
     }
 
@@ -83,13 +94,33 @@ class InternalBookingController extends Controller
      */
     public function store(StoreInternalBookingRequest $request)
     {
+
         $data = $request->validated();
         $data['type'] = 'internal';
         $data['created_by'] = Auth::id();
-        
+        if($request->has_return =='on') {
+            $data['has_return'] = true;
+        } else {
+            $data['has_return'] = false;
+        }
         // إذا لم يتم تحديد return_driver_id، نستخدم نفس السائق
-        if (!isset($data['return_driver_id'])) {
+        if (! isset($data['return_driver_id'])) {
             $data['return_driver_id'] = $data['driver_id'];
+        }
+
+        if (isset($data['departure_to'])) {
+            Location::create([
+                'name' => $data['departure_to'],
+                'type' => 'hotel',
+                'created_by' => Auth::id(),
+            ]);
+        }
+        if (isset($data['return_to'])) {
+            Location::create([
+                'name' => $data['return_to'],
+                'type' => 'hotel',
+                'created_by' => Auth::id(),
+            ]);
         }
 
         $booking = Booking::create($data);
@@ -105,7 +136,7 @@ class InternalBookingController extends Controller
     public function show(Booking $internalBooking)
     {
         // التحقق من الصلاحيات
-        if (!Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بعرض هذا الحجز');
         }
 
@@ -115,11 +146,7 @@ class InternalBookingController extends Controller
             'car',
             'carType',
             'currency',
-            'departureFromLocation',
-            'departureToLocation',
-            'returnFromLocation',
-            'returnToLocation',
-            'creator'
+            'creator',
         ]);
 
         return view('internal-bookings.show', compact('internalBooking'));
@@ -131,7 +158,7 @@ class InternalBookingController extends Controller
     public function edit(Booking $internalBooking)
     {
         // التحقق من الصلاحيات
-        if (!Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
@@ -143,6 +170,12 @@ class InternalBookingController extends Controller
         $companies = \App\Models\Company::all();
         $paymentTypes = Booking::getPaymentTypeOptions();
 
+        if(auth()->user()->isSuperAdmin()) {
+            $supervisors = Supervisor::all();
+        } else {
+            $supervisors = Supervisor::where('user_id', Auth::id())->get();
+        }
+
         return view('internal-bookings.edit', compact(
             'internalBooking',
             'drivers',
@@ -151,7 +184,8 @@ class InternalBookingController extends Controller
             'currencies',
             'locations',
             'companies',
-            'paymentTypes'
+            'paymentTypes',
+            'supervisors'
         ));
     }
 
@@ -161,14 +195,14 @@ class InternalBookingController extends Controller
     public function update(UpdateInternalBookingRequest $request, Booking $internalBooking)
     {
         // التحقق من الصلاحيات
-        if (!Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
         $data = $request->validated();
-        
+
         // إذا لم يتم تحديد return_driver_id، نستخدم نفس السائق
-        if (!isset($data['return_driver_id'])) {
+        if (! isset($data['return_driver_id'])) {
             $data['return_driver_id'] = $data['driver_id'];
         }
 
@@ -185,7 +219,7 @@ class InternalBookingController extends Controller
     public function destroy(Booking $internalBooking)
     {
         // التحقق من الصلاحيات
-        if (!Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بحذف هذا الحجز');
         }
 
@@ -194,5 +228,63 @@ class InternalBookingController extends Controller
         return redirect()
             ->route('internal-bookings.index')
             ->with('success', 'تم حذف الحجز الداخلي بنجاح');
+    }
+
+    /**
+     * Toggle the return status of a booking.
+     */
+    public function toggleReturn(Booking $internalBooking)
+    {
+        // التحقق من الصلاحيات
+        if (! Auth::user()->isSuperAdmin() && $internalBooking->created_by !== Auth::id()) {
+            abort(403, 'غير مصرح لك بتعديل هذا الحجز');
+        }
+
+        if ($internalBooking->returned) {
+            $internalBooking->markAsNotReturned();
+            $message = 'تم إلغاء حالة الإرجاع بنجاح';
+        } else {
+            $internalBooking->markAsReturned();
+            $message = 'تم تحديد الحجز كمُرجع بنجاح';
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', $message);
+    }
+
+    /**
+     * Display a listing of unreturned internal bookings.
+     */
+    public function unreturned(Request $request)
+    {
+        $query = Booking::with([
+            'driver',
+            'returnDriver',
+            'car',
+            'carType',
+            'currency',
+            'creator',
+        ])->internal()->unreturned();
+
+        // إذا كان المستخدم ليس super admin، يشوف حجوزاته فقط
+        if (! Auth::user()->isSuperAdmin()) {
+            $query->where('created_by', Auth::id());
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('room_name', 'like', "%{$search}%")
+                    ->orWhereHas('driver', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $bookings = $query->latest()->paginate(15);
+
+        return view('internal-bookings.unreturned', compact('bookings'));
     }
 }

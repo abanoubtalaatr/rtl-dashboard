@@ -49,7 +49,7 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        
+
         User::create($data);
 
         return redirect()->route('users.index')
@@ -78,14 +78,14 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
-        
+
         // Hash password if provided
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
         }
-        
+
         $user->update($data);
 
         return redirect()->route('users.index')

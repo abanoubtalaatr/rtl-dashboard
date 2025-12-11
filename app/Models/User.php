@@ -64,9 +64,41 @@ class User extends Authenticatable
     }
 
     /**
+     * Get role options with Arabic labels.
+     */
+    public static function getRoleOptions(): array
+    {
+        return [
+            'user' => 'مستخدم عادي',
+            'admin' => 'مدير',
+            'super_admin' => 'مدير عام (Super Admin)',
+        ];
+    }
+
+    /**
+     * Get the Arabic role label.
+     */
+    public function getRoleLabelAttribute(): string
+    {
+        $roles = self::getRoleOptions();
+
+        return $roles[$this->role] ?? $this->role;
+    }
+
+    /**
      * Get bookings created by this user.
      */
     public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'created_by');
+    }
+
+    public function supervisor()
+    {
+        return $this->hasOne(Supervisor::class);
+    }
+
+    public function createdBookings()
     {
         return $this->hasMany(Booking::class, 'created_by');
     }

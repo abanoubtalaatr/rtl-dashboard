@@ -84,6 +84,7 @@
                                     <th>رقم اللوحة</th>
                                     <th>الموديل</th>
                                     <th>اللون</th>
+                                    <th>نوع السيارة</th>
                                     <th style="width: 200px;" class="text-center">الإجراءات</th>
                                 </tr>
                             </thead>
@@ -103,6 +104,7 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td>{{ $car->carType->name ?? '-' }}</td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('cars.show', $car) }}"

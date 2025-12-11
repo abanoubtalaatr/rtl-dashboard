@@ -36,7 +36,6 @@ class UpdateBookingRequest extends FormRequest
         ];
     }
 
-
     /**
      * Get custom messages for validator errors.
      *

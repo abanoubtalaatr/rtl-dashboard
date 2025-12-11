@@ -36,6 +36,7 @@ class Location extends Model
     public function getTypeLabelAttribute(): string
     {
         $types = self::getTypeOptions();
+
         return $types[$this->type] ?? $this->type;
     }
 }

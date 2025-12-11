@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('car_expenses', function (Blueprint $table) {
+            // Change type from enum to json to support multiple types
+            $table->json('type')->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('car_expenses', function (Blueprint $table) {
+            // Revert back to enum
+            $table->enum('type', ['fix', 'fuel'])->change();
+        });
+    }
+};

@@ -25,6 +25,7 @@ class StoreCarRequest extends FormRequest
             'plate_number' => ['required', 'string', 'max:255', 'unique:cars,plate_number'],
             'model' => ['nullable', 'string', 'max:255'],
             'color' => ['nullable', 'string', 'max:255'],
+            'car_type_id' => ['nullable', 'exists:car_types,id'],
         ];
     }
 
@@ -38,6 +39,7 @@ class StoreCarRequest extends FormRequest
         return [
             'plate_number.required' => 'رقم اللوحة مطلوب.',
             'plate_number.unique' => 'رقم اللوحة موجود مسبقاً.',
+            'car_type_id.exists' => 'نوع السيارة غير موجود.',
         ];
     }
 }

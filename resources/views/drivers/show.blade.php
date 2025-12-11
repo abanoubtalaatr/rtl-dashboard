@@ -45,6 +45,10 @@
                                     <td>{{ $driver->license_number }}</td>
                                 </tr>
                                 <tr>
+                                    <th>رقم البطاقة الوطنية</th>
+                                    <td>{{ $driver->national_id ?? '-' }}</td>
+                                </tr>
+                                <tr>
                                     <th>تاريخ الإنشاء</th>
                                     <td>{{ $driver->created_at->format('Y-m-d H:i') }}</td>
                                 </tr>
@@ -55,23 +59,48 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            @if($driver->license_image)
-                                <div class="text-center">
-                                    <h5>صورة الرخصة</h5>
-                                    <a href="{{ $driver->license_image_url }}" target="_blank">
-                                        <img src="{{ $driver->license_image_url }}" 
-                                             alt="صورة الرخصة" 
-                                             class="img-fluid"
-                                             style="max-width: 100%; border: 1px solid #ddd; padding: 10px;">
-                                    </a>
-                                    <p class="text-muted small mt-2">انقر على الصورة لعرضها بحجم كامل</p>
-                                </div>
-                            @else
-                                <div class="text-center text-muted">
-                                    <i class="fas fa-image fa-5x"></i>
-                                    <p>لا توجد صورة للرخصة</p>
-                                </div>
-                            @endif
+                            <div class="mb-4">
+                                @if($driver->license_image)
+                                    <div class="text-center">
+                                        <h5>صورة الرخصة</h5>
+                                        <a href="{{ $driver->license_image_url }}" target="_blank">
+                                            <img src="{{ $driver->license_image_url }}" 
+                                                 alt="صورة الرخصة" 
+                                                 class="img-fluid"
+                                                 style="max-width: 100%; border: 1px solid #ddd; padding: 10px;">
+                                        </a>
+                                        <p class="text-muted small mt-2">انقر على الصورة لعرضها بحجم كامل</p>
+                                    </div>
+                                @else
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-image fa-3x"></i>
+                                        <p>لا توجد صورة للرخصة</p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div>
+                                <h5 class="text-center">صور البطاقة الوطنية</h5>
+                                @if($driver->national_images_urls && count($driver->national_images_urls))
+                                    <div class="d-flex flex-wrap justify-content-center">
+                                        @foreach($driver->national_images_urls as $url)
+                                            <div class="m-1 text-center">
+                                                <a href="{{ $url }}" target="_blank">
+                                                    <img src="{{ $url }}" 
+                                                         alt="صورة البطاقة" 
+                                                         style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; padding: 3px;">
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <p class="text-muted small text-center mt-2">انقر على أي صورة لعرضها بحجم كامل</p>
+                                @else
+                                    <div class="text-center text-muted">
+                                        <i class="far fa-id-card fa-3x"></i>
+                                        <p>لا توجد صور للبطاقة الوطنية</p>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

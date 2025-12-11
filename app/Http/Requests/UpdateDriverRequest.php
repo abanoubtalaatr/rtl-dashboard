@@ -22,7 +22,8 @@ class UpdateDriverRequest extends FormRequest
      */
     public function rules(): array
     {
-        $driverId = $this->route('driver');
+        $driver = $this->route('driver');
+        $driverId = $driver instanceof \App\Models\Driver ? $driver->id : $driver;
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -35,6 +36,9 @@ class UpdateDriverRequest extends FormRequest
                 Rule::unique('drivers', 'license_number')->ignore($driverId),
             ],
             'license_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'national_id' => ['required', 'string', 'max:255'],
+            'national_images' => ['nullable', 'array'],
+            'national_images.*' => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ];
     }
 
@@ -54,6 +58,11 @@ class UpdateDriverRequest extends FormRequest
             'license_image.image' => 'يجب أن يكون الملف صورة.',
             'license_image.mimes' => 'يجب أن تكون الصورة من نوع: jpeg, png, jpg, gif.',
             'license_image.max' => 'حجم الصورة يجب ألا يتجاوز 2 ميجابايت.',
+            'national_id.required' => 'رقم البطاقة الوطنية مطلوب.',
+            'national_images.array' => 'ملفات البطاقة غير صحيحة.',
+            'national_images.*.image' => 'يجب أن تكون كل ملفات البطاقة صوراً.',
+            'national_images.*.mimes' => 'يجب أن تكون صور البطاقة من نوع: jpeg, png, jpg, gif.',
+            'national_images.*.max' => 'حجم كل صورة للبطاقة يجب ألا يتجاوز 2 ميجابايت.',
         ];
     }
 }

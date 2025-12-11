@@ -36,7 +36,6 @@ class StoreBookingRequest extends FormRequest
         ];
     }
 
-
     /**
      * Get custom messages for validator errors.
      *

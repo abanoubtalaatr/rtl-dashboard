@@ -23,10 +23,12 @@ class UpdateCarRequest extends FormRequest
     public function rules(): array
     {
         $carId = $this->route('car')->id;
+
         return [
             'plate_number' => ['required', 'string', 'max:255', Rule::unique('cars', 'plate_number')->ignore($carId)],
             'model' => ['nullable', 'string', 'max:255'],
             'color' => ['nullable', 'string', 'max:255'],
+            'car_type_id' => ['nullable', 'exists:car_types,id'],
         ];
     }
 
@@ -40,6 +42,7 @@ class UpdateCarRequest extends FormRequest
         return [
             'plate_number.required' => 'رقم اللوحة مطلوب.',
             'plate_number.unique' => 'رقم اللوحة موجود مسبقاً.',
+            'car_type_id.exists' => 'نوع السيارة غير موجود.',
         ];
     }
 }

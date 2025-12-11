@@ -260,9 +260,9 @@ return [
     'dashboard_url' => 'home',
     'logout_url' => 'logout',
     'login_url' => 'login',
-    'register_url' => 'register',
-    'password_reset_url' => 'password.update',
-    'password_email_url' => 'password.email',
+    'register_url' => false,
+    'password_reset_url' => 'password.reset',
+    'password_email_url' => 'password.request',
     'profile_url' => false,
     'disable_darkmode_routes' => false,
 
@@ -311,125 +311,203 @@ return [
         ],
 
         // Sidebar items:
-        
-          
-          // Main Dashboard
-          [
-              'text' => 'Dashboard',
-              'url' => 'home',
-              'icon' => 'fas fa-fw fa-tachometer-alt',
-              'active' => ['home'],
-          ],
-          
-          // Drivers
-          [
-              'text' => 'السائقين',
-              'url' => 'drivers',
-              'icon' => 'fas fa-fw fa-user-tie',
-              'active' => ['drivers*'],
-          ],
-          
-          // Customers
-          [
-              'text' => 'العملاء',
-              'url' => 'customers',
-              'icon' => 'fas fa-fw fa-users',
-              'active' => ['customers*'],
-          ],
-          
-          // Companies
-          [
-              'text' => 'الشركات',
-              'url' => 'companies',
-              'icon' => 'fas fa-fw fa-building',
-              'active' => ['companies*'],
-          ],
-          
-          // Currencies
-          [
-              'text' => 'العملات',
-              'url' => 'currencies',
-              'icon' => 'fas fa-fw fa-coins',
-              'active' => ['currencies*'],
-          ],
-          
-          // Bookings Section
-          ['header' => 'إدارة الحجوزات'],
-          
-          // Internal Bookings
-          [
-              'text' => 'الحجوزات الداخلية',
-              'url' => 'internal-bookings',
-              'icon' => 'fas fa-fw fa-calendar-alt',
-              'active' => ['internal-bookings*'],
-          ],
-          
-          // External Bookings
-          [
-              'text' => 'الحجوزات الخارجية',
-              'url' => 'external-bookings',
-              'icon' => 'fas fa-fw fa-calendar-plus',
-              'active' => ['external-bookings*'],
-          ],
-          
-          // Old Bookings (للحفاظ على التوافقية)
-          [
-              'text' => 'الحجوزات (قديم)',
-              'url' => 'bookings',
-              'icon' => 'fas fa-fw fa-calendar-check',
-              'active' => ['bookings*'],
-          ],
-          
-          // Car Types
-          [
-              'text' => 'أنواع السيارات',
-              'url' => 'car-types',
-              'icon' => 'fas fa-fw fa-car-side',
-              'active' => ['car-types*'],
-          ],
-          
-          // Locations
-          [
-              'text' => 'المواقع (التشغيلات)',
-              'url' => 'locations',
-              'icon' => 'fas fa-fw fa-map-marked-alt',
-              'active' => ['locations*'],
-          ],
-          
-          ['header' => 'إدارة السيارات'],
-          
-          // Cars
-          [
-              'text' => 'السيارات',
-              'url' => 'cars',
-              'icon' => 'fas fa-fw fa-car',
-              'active' => ['cars*'],
-          ],
-          
-          // Car Availability
-          [
-              'text' => 'السيارات المتاحة',
-              'url' => 'availability',
-              'icon' => 'fas fa-fw fa-search',
-              'active' => ['cars-availability*'],
-          ],
-          
-          // Car Expenses
-          [
-              'text' => 'مصروفات السيارات',
-              'url' => 'car-expenses',
-              'icon' => 'fas fa-fw fa-dollar-sign',
-              'active' => ['car-expenses*'],
-          ],
-          
-          // Users
-          [
-              'text' => 'المستخدمون',
-              'url' => 'users',
-              'icon' => 'fas fa-fw fa-users-cog',
-              'active' => ['users*'],
-          ],
-        
+
+        // Main Dashboard
+        [
+            'text' => 'Dashboard',
+            'url' => 'home',
+            'icon' => 'fas fa-fw fa-tachometer-alt',
+            'active' => ['home'],
+        ],
+
+        // Drivers
+        [
+            'text' => 'السائقين',
+            'url' => 'drivers',
+            'icon' => 'fas fa-fw fa-user-tie',
+            'active' => ['drivers*'],
+        ],
+
+        // Customers
+        [
+            'text' => 'العملاء',
+            'url' => 'customers',
+            'icon' => 'fas fa-fw fa-users',
+            'active' => ['customers*'],
+        ],
+
+        // Companies
+        [
+            'text' => 'الشركات',
+            'url' => 'companies',
+            'icon' => 'fas fa-fw fa-building',
+            'active' => ['companies*'],
+        ],
+
+        // Currencies
+        [
+            'text' => 'العملات',
+            'url' => 'currencies',
+            'icon' => 'fas fa-fw fa-coins',
+            'active' => ['currencies*'],
+        ],
+
+        // Bookings Section
+        ['header' => 'إدارة الحجوزات'],
+
+        // Internal Bookings
+        [
+            'text' => 'الحجوزات الداخلية',
+            'url' => 'internal-bookings',
+            'icon' => 'fas fa-fw fa-calendar-alt',
+            'active' => ['internal-bookings*'],
+        ],
+
+        // External Bookings
+        [
+            'text' => 'الحجوزات الخارجية',
+            'url' => 'external-bookings',
+            'icon' => 'fas fa-fw fa-calendar-plus',
+            'active' => ['external-bookings*'],
+        ],
+
+        // Old Bookings (للحفاظ على التوافقية)
+
+        // Car Types
+        [
+            'text' => 'أنواع السيارات',
+            'url' => 'car-types',
+            'icon' => 'fas fa-fw fa-car-side',
+            'active' => ['car-types*'],
+        ],
+
+        // Locations
+        [
+            'text' => 'المواقع (التشغيلات)',
+            'url' => 'locations',
+            'icon' => 'fas fa-fw fa-map-marked-alt',
+            'active' => ['locations*'],
+        ],
+
+        // Retrieveds
+        [
+            'text' => 'المبالغ المستردة',
+            'url' => 'retrieveds',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'active' => ['retrieveds*'],
+        ],
+
+        ['header' => 'إدارة السيارات'],
+
+        // Cars
+        [
+            'text' => 'السيارات',
+            'url' => 'cars',
+            'icon' => 'fas fa-fw fa-car',
+            'active' => ['cars*'],
+        ],
+
+        // Car Availability
+        [
+            'text' => 'السيارات المتاحة',
+            'url' => 'availability',
+            'icon' => 'fas fa-fw fa-search',
+            'active' => ['cars-availability*'],
+        ],
+
+        // Car Expenses
+        [
+            'text' => 'مصروفات السيارات',
+            'url' => 'car-expenses',
+            'icon' => 'fas fa-fw fa-dollar-sign',
+            'active' => ['car-expenses*'],
+        ],
+
+        // Users
+        [
+            'text' => 'المستخدمون',
+            'url' => 'users',
+            'icon' => 'fas fa-fw fa-users-cog',
+            'active' => ['users*'],
+        ],
+
+        [
+            'text' => 'المشرفين',
+            'url' => 'supervisors',
+            'icon' => 'fas fa-fw fa-users-cog',
+            'active' => ['supervisors*'],
+        ],
+
+        // Reports Section (Super Admin Only)
+        ['header' => 'التقارير (للمدير العام فقط)', 'can' => 'super_admin'],
+
+        // Internal Bookings Reports
+        [
+            'text' => 'تقارير الحجوزات الداخلية',
+            'url' => 'reports/internal-bookings',
+            'icon' => 'fas fa-fw fa-chart-line',
+            'active' => ['reports/internal-bookings*'],
+            'can' => 'super_admin',
+        ],
+
+        // External Bookings Reports
+        [
+            'text' => 'تقارير الحجوزات الخارجية',
+            'url' => 'reports/external-bookings',
+            'icon' => 'fas fa-fw fa-chart-bar',
+            'active' => ['reports/external-bookings*'],
+            'can' => 'super_admin',
+        ],
+
+        // Car Financial Report
+        [
+            'text' => 'التقرير المالي للسيارات',
+            'url' => 'reports/car-report',
+            'icon' => 'fas fa-fw fa-car-side',
+            'active' => ['reports/car-report*'],
+            'can' => 'super_admin',
+        ],
+
+        // Users Bookings Report
+        [
+            'text' => 'تقرير الحسابات',
+            'url' => 'reports/users-bookings',
+            'icon' => 'fas fa-fw fa-users',
+            'active' => ['reports/users-bookings*'],
+            'can' => 'super_admin',
+        ],
+        // Expenses
+        [
+            'text' => 'المصروفات',
+            'url' => 'reports/expenses',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'active' => ['expenses*'],
+            'can' => 'super_admin',
+        ],
+        // Incomes
+        [
+            'text' => 'الإيرادات',
+            'url' => 'reports/incomes',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'active' => ['incomes*'],
+            'can' => 'super_admin',
+        ],
+        // Income Expense Report
+        [
+            'text' => 'المصروفات والإيرادات',
+            'url' => 'reports/income-expense-reports',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'active' => ['income-expense*'],
+            'can' => 'super_admin',
+        ],
+        // Settings
+        [
+            'text' => 'الإعدادات',
+            'url' => 'settings',
+            'icon' => 'fas fa-fw fa-cog',
+            'active' => ['settings*'],
+            'can' => 'super_admin',
+        ],
         // Example: Simple link with icon
         // [
         //     'text' => 'Users',
@@ -437,7 +515,7 @@ return [
         //     'icon' => 'fas fa-fw fa-users',
         //     'active' => ['users*'],
         // ],
-        
+
         // Example: Link with badge/label
         // [
         //     'text' => 'Orders',
@@ -447,7 +525,7 @@ return [
         //     'label_color' => 'success',
         //     'active' => ['orders*'],
         // ],
-        
+
         // Example: Link with route name
         // [
         //     'text' => 'Products',
@@ -455,10 +533,10 @@ return [
         //     'icon' => 'fas fa-fw fa-box',
         //     'active' => ['products*'],
         // ],
-        
+
         // Section Header
         // ['header' => 'MANAGEMENT'],
-        
+
         // Example: Menu with submenu
         // [
         //     'text' => 'Settings',
@@ -481,7 +559,7 @@ return [
         //         ],
         //     ],
         // ],
-        
+
         // Example: Link with permission check
         // [
         //     'text' => 'Admin Panel',
@@ -489,10 +567,10 @@ return [
         //     'icon' => 'fas fa-fw fa-user-shield',
         //     'can' => 'access-admin',
         // ],
-        
+
         // Section Header
         // ['header' => 'ACCOUNT'],
-        
+
         // [
         //     'text' => 'Profile',
         //     'url' => 'profile',
@@ -659,16 +737,16 @@ return [
 
     'livewire' => false,
     // Enable RTL layout
-'enabled_laravel_rtl' => true,   // This automatically handles most RTL fixes
+    'enabled_laravel_rtl' => true,   // This automatically handles most RTL fixes
 
-// Force right-to-left direction
-'layout_direction' => 'lrt',     // Options: 'ltr' or 'rtl'
+    // Force right-to-left direction
+    'layout_direction' => 'lrt',     // Options: 'ltr' or 'rtl'
 
-// Optional: Use darker/nice RTL sidebar (recommended for Arabic/Persian)
-'dashboard_url'         => 'home',
-'sidebar_mini'          => true,
-'right_sidebar'         => false,
-'layout'                => 'sidebar-mini layout-fixed layout-navbar-fixed',
-'sidebar_collapse'      => false,
-'right_sidebar_push'    => false,
+    // Optional: Use darker/nice RTL sidebar (recommended for Arabic/Persian)
+    'dashboard_url' => 'home',
+    'sidebar_mini' => true,
+    'right_sidebar' => false,
+    'layout' => 'sidebar-mini layout-fixed layout-navbar-fixed',
+    'sidebar_collapse' => false,
+    'right_sidebar_push' => false,
 ];

@@ -72,6 +72,52 @@
                         </div>
 
                         <div class="form-group">
+                            <label>الصلاحيات <span class="text-danger">*</span></label>
+                            <div class="card">
+                                <div class="card-body">
+                                    @foreach(\App\Models\User::getRoleOptions() as $value => $label)
+                                        <div class="custom-control custom-radio mb-2">
+                                            <input type="radio" 
+                                                   class="custom-control-input @error('role') is-invalid @enderror" 
+                                                   id="role_{{ $value }}" 
+                                                   name="role" 
+                                                   value="{{ $value }}"
+                                                   {{ old('role', 'user') == $value ? 'checked' : '' }}>
+                                            <label class="custom-control-label" for="role_{{ $value }}">
+                                                @if($value === 'super_admin')
+                                                    <i class="fas fa-crown text-warning"></i>
+                                                @elseif($value === 'admin')
+                                                    <i class="fas fa-user-shield text-info"></i>
+                                                @else
+                                                    <i class="fas fa-user text-secondary"></i>
+                                                @endif
+                                                <strong>{{ $label }}</strong>
+                                                @if($value === 'super_admin')
+                                                    <small class="text-muted d-block mr-4">
+                                                        صلاحيات كاملة - يمكنه الوصول للتقارير وجميع الميزات
+                                                    </small>
+                                                @elseif($value === 'admin')
+                                                    <small class="text-muted d-block mr-4">
+                                                        صلاحيات إدارية - لا يمكنه الوصول للتقارير
+                                                    </small>
+                                                @else
+                                                    <small class="text-muted d-block mr-4">
+                                                        صلاحيات محدودة - مستخدم عادي
+                                                    </small>
+                                                @endif
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @error('role')
+                                <span class="text-danger d-block mt-1">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> حفظ
                             </button>

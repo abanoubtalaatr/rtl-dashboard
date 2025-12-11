@@ -26,11 +26,50 @@
                     <table class="table table-bordered">
                         <tr>
                             <th style="width: 200px;">الاسم</th>
-                            <td>{{ $user->name }}</td>
+                            <td>
+                                @if($user->isSuperAdmin())
+                                    <i class="fas fa-crown text-warning mr-2"></i>
+                                @elseif($user->isAdmin())
+                                    <i class="fas fa-user-shield text-info mr-2"></i>
+                                @else
+                                    <i class="fas fa-user text-secondary mr-2"></i>
+                                @endif
+                                {{ $user->name }}
+                            </td>
                         </tr>
                         <tr>
                             <th>البريد الإلكتروني</th>
                             <td>{{ $user->email }}</td>
+                        </tr>
+                        <tr>
+                            <th>الصلاحيات</th>
+                            <td>
+                                @if($user->isSuperAdmin())
+                                    <span class="badge badge-warning badge-lg">
+                                        <i class="fas fa-crown"></i> {{ $user->role_label }}
+                                    </span>
+                                    <p class="text-muted mt-2 mb-0">
+                                        <i class="fas fa-info-circle"></i>
+                                        صلاحيات كاملة - يمكن الوصول للتقارير وجميع الميزات
+                                    </p>
+                                @elseif($user->isAdmin())
+                                    <span class="badge badge-info badge-lg">
+                                        <i class="fas fa-user-shield"></i> {{ $user->role_label }}
+                                    </span>
+                                    <p class="text-muted mt-2 mb-0">
+                                        <i class="fas fa-info-circle"></i>
+                                        صلاحيات إدارية - لا يمكن الوصول للتقارير
+                                    </p>
+                                @else
+                                    <span class="badge badge-secondary badge-lg">
+                                        <i class="fas fa-user"></i> {{ $user->role_label }}
+                                    </span>
+                                    <p class="text-muted mt-2 mb-0">
+                                        <i class="fas fa-info-circle"></i>
+                                        صلاحيات محدودة - مستخدم عادي
+                                    </p>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>تاريخ الإنشاء</th>
