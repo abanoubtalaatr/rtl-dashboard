@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Booking;
+use App\Models\Setting;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreExternalBookingRequest extends FormRequest
@@ -23,7 +25,40 @@ class StoreExternalBookingRequest extends FormRequest
     {
         return [
             'customer_id' => 'required|exists:customers,id',
-            'car_id' => 'required|exists:cars,id',
+            'car_id' => ['required|exists:cars,id',
+            function ($attribute, $value, $fail) {
+                $bookingFrom = $this->input('booking_from');
+                $bookingTo = $this->input('booking_to');
+
+                if (!$bookingFrom || !$bookingTo) {
+                    return;
+                }
+
+                if (Setting::get('enable_check_the_car_available', true)) {
+                    // Check for overlapping bookings for the departure car
+                    $overlappingBooking = Booking::where('car_id', $value)
+                        ->where(function ($query) use ($bookingFrom, $bookingTo) {
+                            $query->where(function ($q) use ($bookingFrom, $bookingTo) {
+                                // New booking starts during or at the same time as an existing booking
+                                $q->where('booking_from', '<=', $bookingFrom)
+                                    ->where('booking_to', '>', $bookingFrom);
+                            })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
+                                // New booking ends during an existing booking
+                                $q->where('booking_from', '<', $bookingTo)
+                                    ->where('booking_to', '>=', $bookingTo);
+                            })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
+                                // Existing booking starts during the new booking
+                                $q->where('booking_from', '>=', $bookingFrom)
+                                    ->where('booking_from', '<', $bookingTo);
+                            });
+                        })
+                        ->exists();
+
+                    if ($overlappingBooking) {
+                        $fail('السيارة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
+                    }
+                }
+            }],
             'car_type_id' => 'required|exists:car_types,id',
             'payment_type' => 'required',
             'number_of_people' => 'required|integer|min:1',

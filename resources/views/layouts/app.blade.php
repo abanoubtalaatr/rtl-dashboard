@@ -4,7 +4,7 @@
 @section('title', 'Dashboard')
 
 @section('content_header')
-    <h1 class="m-0">داشبورد</h1>  {{-- Persian/Arabic example --}}
+    <h1 class="m-0">داشبورد</h1>
 @stop
 
 @section('content')
@@ -63,18 +63,21 @@
             bottom: 0 !important;
             z-index: 1038 !important;
         }
+        
         .flex-column {
             display: flex;
-    flex-direction: row;          /* row, not column and definitely not "none" */
-    justify-content: flex-end;    /* pushes all children to the right */
-    align-items: flex-start;          /* optional */
-    gap: 1rem;
-    padding-right: 0px
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            gap: 1rem;
+            padding-right: 0px;
         }
+        
         .nav-sidebar>.nav-item{
             width: 100%;
-    text-align: start;
+            text-align: start;
         }
+        
         body.rtl .content-wrapper,
         body.rtl .main-footer,
         body.rtl .main-header,
@@ -109,14 +112,12 @@
             flex-direction: row-reverse !important;
         }
 
-        /* Move sidebar toggle button to the right side (next to sidebar) */
         body.rtl .main-header .navbar-nav[class*="left"] {
             order: 2 !important;
             margin-right: auto !important;
             margin-left: 0 !important;
         }
 
-        /* Move user menu to the left side */
         body.rtl .main-header .navbar-nav[class*="right"],
         body.rtl .main-header .navbar-nav.ml-auto,
         body.rtl .main-header .navbar-nav.ms-auto {
@@ -125,24 +126,20 @@
             margin-left: auto !important;
         }
 
-        /* Fix navbar brand/title position */
         body.rtl .main-header .navbar-brand {
             margin-right: 0 !important;
             margin-left: 1rem !important;
             order: 3 !important;
         }
 
-        /* Ensure toggle button appears on right */
         body.rtl .main-header .nav-link[data-widget="pushmenu"] {
             order: 2 !important;
         }
 
-        /* Fix sidebar brand logo position */
         body.rtl .main-sidebar .brand-link {
             text-align: right;
         }
 
-        /* Adjust sidebar navigation */
         body.rtl .nav-sidebar .nav-link {
             padding-right: 1rem;
             padding-left: 2.5rem;
@@ -153,7 +150,6 @@
             left: auto !important;
         }
 
-        /* Fix dropdown menus in sidebar */
         body.rtl .nav-sidebar .nav-treeview {
             padding-right: 0;
             padding-left: 0;
@@ -164,12 +160,10 @@
             padding-left: 1rem;
         }
 
-        /* Ensure body has RTL direction */
         body.rtl {
             direction: rtl;
         }
 
-        /* Fix content alignment */
         body.rtl .content {
             text-align: right;
         }
@@ -178,25 +172,21 @@
             direction: rtl;
         }
 
-        /* Fix sidebar search */
         body.rtl .sidebar .form-control-sidebar {
             text-align: right;
         }
 
-        /* Adjust user menu in header - move to left side */
         body.rtl .main-header .navbar-nav.ml-auto,
         body.rtl .main-header .navbar-nav.ms-auto {
             margin-right: auto !important;
             margin-left: 0 !important;
         }
 
-        /* Fix navbar items spacing */
         body.rtl .main-header .navbar-nav .nav-item {
             margin-right: 0;
             margin-left: 0.5rem;
         }
 
-        /* Fix content header alignment */
         body.rtl .content-header {
             text-align: right;
         }
@@ -205,14 +195,12 @@
             float: left !important;
         }
         
-        /* Ensure all cards and content are RTL */
         body.rtl .card,
         body.rtl .card-body,
         body.rtl .card-header {
             direction: rtl;
         }
         
-        /* Fix form elements */
         body.rtl .form-control,
         body.rtl input,
         body.rtl textarea,
@@ -221,7 +209,6 @@
             direction: rtl;
         }
         
-        /* Fix select dropdown for RTL */
         body.rtl select.form-control {
             padding-right: 0.75rem;
             padding-left: 2.25rem;
@@ -239,26 +226,22 @@
             padding: 8px 12px;
         }
         
-        /* Ensure select dropdown list appears correctly */
         body.rtl select.form-control:focus {
             outline: none;
             border-color: #80bdff;
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
         
-        /* Fix select dropdown arrow positioning */
         body.rtl select.form-control::-ms-expand {
             display: none;
         }
         
-        /* Better styling for select elements */
         body.rtl .form-group select.form-control {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: left 0.5rem center;
             background-size: 1.5em 1.5em;
         }
         
-        /* Enhanced Table Design */
         body.rtl .table {
             direction: rtl;
             border-radius: 8px;
@@ -289,7 +272,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         
-        /* Fix pagination for RTL */
         body.rtl .pagination {
             direction: ltr;
             justify-content: center;
@@ -314,12 +296,10 @@
             justify-content: center;
         }
         
-        /* Fix pagination wrapper */
         body.rtl .d-flex.justify-content-center {
             direction: ltr;
         }
         
-        /* Ensure pagination numbers are readable */
         body.rtl .pagination .page-link {
             min-width: 38px;
         }
@@ -478,19 +458,277 @@
             padding: 6px 12px;
             font-weight: 600;
         }
+
+        /* ===================================
+           MOBILE SIDEBAR TOGGLE FIX - RTL
+           =================================== */
+
+        /* Ensure sidebar toggle button is always visible */
+        body.rtl .main-header .nav-link[data-widget="pushmenu"] {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            z-index: 9999;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 991.98px) {
+            
+            /* Hide sidebar by default on mobile */
+            body.rtl .main-sidebar {
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            
+            /* Show sidebar when opened */
+            body.rtl.sidebar-open .main-sidebar {
+                transform: translateX(0);
+            }
+            
+            /* Add overlay when sidebar is open */
+            body.rtl.sidebar-open::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1037;
+                animation: fadeInOverlay 0.3s ease;
+            }
+            
+            @keyframes fadeInOverlay {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            /* Ensure content is full width on mobile */
+            body.rtl .content-wrapper,
+            body.rtl .main-footer,
+            body.rtl .main-header {
+                margin-right: 0 !important;
+                margin-left: 0 !important;
+            }
+            
+            /* Make sidebar full height and above content */
+            body.rtl .main-sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 250px !important;
+                height: 100vh !important;
+                z-index: 1038 !important;
+                overflow-y: auto;
+            }
+            
+            /* Enhanced toggle button styling for mobile */
+            body.rtl .main-header .nav-link[data-widget="pushmenu"] {
+                background: #007bff;
+                color: white !important;
+                border-radius: 8px;
+                margin: 0 0.5rem;
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            body.rtl .main-header .nav-link[data-widget="pushmenu"]:hover {
+                background: #0056b3;
+                transform: scale(1.05);
+            }
+            
+            /* Add close button inside sidebar for mobile */
+            body.rtl .main-sidebar .brand-link::after {
+                content: '\f00d';
+                font-family: 'Font Awesome 5 Free';
+                font-weight: 900;
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.5rem;
+                color: rgba(255, 255, 255, 0.8);
+                cursor: pointer;
+                display: block;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.1);
+                transition: all 0.3s ease;
+            }
+            
+            body.rtl .main-sidebar .brand-link::after:hover {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+            }
+            
+            /* Adjust navbar for mobile */
+            body.rtl .main-header .navbar {
+                padding: 0.5rem 1rem;
+            }
+            
+            /* Make sure content is scrollable on mobile */
+            body.rtl .content-wrapper {
+                min-height: calc(100vh - 57px);
+                overflow-x: hidden;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            body.rtl .main-sidebar {
+                width: 250px !important;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 575.98px) {
+            body.rtl .main-sidebar {
+                width: 100% !important;
+                max-width: 280px;
+            }
+            
+            /* Make cards stack properly on small screens */
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+            
+            /* Adjust font sizes for mobile */
+            .stat-value {
+                font-size: 2rem !important;
+            }
+            
+            .stat-label {
+                font-size: 0.95rem !important;
+            }
+        }
     </style>
 @stop
 
 @section('js')
     <script>
-        // Ensure RTL layout is applied
         document.addEventListener('DOMContentLoaded', function() {
-            // Ensure body has rtl class
+            
+            // Function to handle sidebar toggle
+            function initializeMobileSidebar() {
+                const body = document.body;
+                const sidebar = document.querySelector('.main-sidebar');
+                const toggleBtn = document.querySelector('[data-widget="pushmenu"]');
+                const brandLink = document.querySelector('.main-sidebar .brand-link');
+                
+                if (!sidebar || !toggleBtn) {
+                    console.warn('Sidebar elements not found');
+                    return;
+                }
+                
+                // Close sidebar function
+                function closeSidebar() {
+                    body.classList.remove('sidebar-open');
+                    body.classList.add('sidebar-closed');
+                }
+                
+                // Open sidebar function
+                function openSidebar() {
+                    body.classList.remove('sidebar-closed');
+                    body.classList.add('sidebar-open');
+                }
+                
+                // Toggle sidebar function
+                function toggleSidebar(e) {
+                    if (e) e.preventDefault();
+                    
+                    if (body.classList.contains('sidebar-open')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                }
+                
+                // Toggle button click handler
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', toggleSidebar);
+                }
+                
+                // Close sidebar when clicking on overlay (mobile only)
+                if (window.innerWidth < 992) {
+                    body.addEventListener('click', function(e) {
+                        if (body.classList.contains('sidebar-open') && 
+                            !sidebar.contains(e.target) && 
+                            !toggleBtn.contains(e.target)) {
+                            closeSidebar();
+                        }
+                    });
+                }
+                
+                // Close button in brand link (mobile only)
+                if (brandLink && window.innerWidth < 992) {
+                    brandLink.addEventListener('click', function(e) {
+                        // Check if clicked on the close button area (left side)
+                        const rect = brandLink.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        
+                        if (clickX < 50) { // Close button area
+                            e.preventDefault();
+                            closeSidebar();
+                        }
+                    });
+                }
+                
+                // Close sidebar when clicking on menu item (mobile only)
+                if (window.innerWidth < 992) {
+                    const menuLinks = document.querySelectorAll('.nav-sidebar .nav-link');
+                    menuLinks.forEach(link => {
+                        link.addEventListener('click', function() {
+                            // Don't close if it has submenu
+                            if (!this.nextElementSibling || 
+                                !this.nextElementSibling.classList.contains('nav-treeview')) {
+                                setTimeout(closeSidebar, 300);
+                            }
+                        });
+                    });
+                }
+                
+                // Handle window resize
+                let resizeTimer;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(function() {
+                        if (window.innerWidth >= 992) {
+                            // Desktop mode - remove mobile classes
+                            body.classList.remove('sidebar-open', 'sidebar-closed');
+                        } else {
+                            // Mobile mode - ensure sidebar is closed by default
+                            if (!body.classList.contains('sidebar-open')) {
+                                closeSidebar();
+                            }
+                        }
+                    }, 250);
+                });
+                
+                // Initialize - close sidebar on mobile by default
+                if (window.innerWidth < 992) {
+                    closeSidebar();
+                }
+            }
+            
+            // Initialize sidebar
+            initializeMobileSidebar();
+            
+            // Also ensure RTL class is present
             if (!document.body.classList.contains('rtl')) {
                 document.body.classList.add('rtl');
             }
             
-            // Force sidebar to right
+            // Ensure proper sidebar positioning
             const sidebar = document.querySelector('.main-sidebar');
             if (sidebar) {
                 sidebar.style.right = '0';
@@ -499,10 +737,13 @@
             
             // Ensure content wrapper has proper margin
             const contentWrapper = document.querySelector('.content-wrapper');
-            if (contentWrapper && !document.body.classList.contains('sidebar-collapse')) {
+            if (contentWrapper && !document.body.classList.contains('sidebar-collapse') && window.innerWidth >= 992) {
                 contentWrapper.style.marginRight = '250px';
                 contentWrapper.style.marginLeft = '0';
             }
+            
+            // Log for debugging
+            console.log('Mobile sidebar initialized successfully');
         });
     </script>
 @stop
