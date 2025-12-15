@@ -65,7 +65,7 @@
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}"
                                                 {{ old('departure_from_location_id') == $location->id ? 'selected' : '' }}>
-                                                {{ $location->name }} ({{ $location->type_label }})
+                                                {{ $location->name }} 
                                             </option>
                                         @endforeach
                                     </select>
@@ -96,7 +96,7 @@
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}"
                                                 {{ old('departure_to_location_id') == $location->id ? 'selected' : '' }}>
-                                                {{ $location->name }} ({{ $location->type_label }})
+                                                {{ $location->name }} 
                                             </option>
                                         @endforeach
                                     </select>
@@ -173,7 +173,7 @@
                             <!-- رقم الغرفة -->
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="room_name">اسم الغرفة <span class="text-danger">*</span></label>
+                                    <label for="room_name">رقم الغرفة <span class="text-danger">*</span></label>
                                     <input type="text" name="room_name" id="room_name"
                                         class="form-control @error('room_name') is-invalid @enderror"
                                         value="{{ old('room_name') }}" placeholder="مثال: 201" required>
@@ -312,8 +312,7 @@
                                 <div class="form-group d-flex align-items-center" style="gap: 10px;">
                                     <input type="checkbox" name="has_return" id="has_return" id="has_return_checkbox"
                                         style="width: 1.3em; height: 1.3em;"
-                                        class="@error('has_return') is-invalid @enderror"
-                                        checked>
+                                        class="@error('has_return') is-invalid @enderror" checked>
                                     <label for="has_return" class="mb-0">هل يوجد للحجز عودة <span
                                             class="text-danger">*</span></label>
                                     @error('has_return')
@@ -351,7 +350,15 @@
                                         @enderror
                                     </div>
                                 </div>
-
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="on_phone"> على الهاتف <span class="text-danger">*</span></label>
+                                        <input type="checkbox" name="on_phone" id="on_phone" style="width: 1.3em; height: 1.3em;" class="@error('on_phone') is-invalid @enderror">
+                                    </div>
+                                    @error('on_phone')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 <!-- التاريخ والوقت للعودة -->
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -564,26 +571,36 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // When departure FROM changes → set return TO
             var depFromSelect = document.getElementById('departure_from_location_id');
-            var returnFromSelect = document.getElementById('return_from_location_id');
-            if (depFromSelect && returnFromSelect) {
+            var returnToSelect = document.getElementById('return_to_location_id');
+
+            if (depFromSelect && returnToSelect) {
                 depFromSelect.addEventListener('change', function() {
                     if (this.value) {
-                        returnFromSelect.value = this.value;
-                    }
-                });
-            }
-            var depToSelect = document.getElementById('departure_to_location_id');
-            var returnToSelect = document.getElementById('return_to_location_id');
-            if (depToSelect && returnToSelect) {
-                depToSelect.addEventListener('change', function() {
-                    if (this.value) {
+                        console.log('Setting return TO from departure FROM:', this.value);
                         returnToSelect.value = this.value;
                     }
                 });
             }
+
+            // When departure TO changes → set return FROM
+            var depToSelect = document.getElementById('departure_to_location_id');
+            var returnFromSelect = document.getElementById('return_from_location_id');
+
+            if (depToSelect && returnFromSelect) {
+                depToSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        console.log('Setting return FROM from departure TO:', this.value);
+                        returnFromSelect.value = this.value;
+                    }
+                });
+            }
+
+            // Keep the car selection logic (same car for return)
             var depCarSelect = document.getElementById('car_id');
             var returnCarSelect = document.getElementById('return_car_id');
+
             if (depCarSelect && returnCarSelect) {
                 depCarSelect.addEventListener('change', function() {
                     if (this.value) {
@@ -591,7 +608,6 @@
                     }
                 });
             }
-
         });
     </script>
 

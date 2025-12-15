@@ -425,7 +425,7 @@ return [
 
         // Users
         [
-            'text' => 'المستخدمون',
+            'text' => 'الفنادق',
             'url' => 'users',
             'icon' => 'fas fa-fw fa-users-cog',
             'active' => ['users*'],

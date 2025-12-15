@@ -84,6 +84,7 @@ class StoreExternalBookingRequest extends FormRequest
             'commission_for_driver' => 'required|numeric|min:0',
             'return_car_id' => 'nullable|exists:cars,id',
             'has_return' => 'nullable|boolean',
+            'on_phone' => 'nullable',
         ];
     }
 

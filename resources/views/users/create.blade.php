@@ -11,7 +11,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">بيانات المستخدم</h3>
+                    <h3 class="card-title">بيانات الفندق</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">

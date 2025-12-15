@@ -197,6 +197,10 @@
                                     <th style="background-color: #f4f6f9;">سعر الحجز</th>
                                     <td>{{ number_format($internalBooking->booking_price, 2) }}</td>
                                 </tr>
+                                <tr>
+                                    <th style="background-color: #f4f6f9;">على الهاتف</th>
+                                    <td>{{ $internalBooking->on_phone ? 'نعم' : 'لا' }}</td>
+                                </tr>
                             </table>
                         </div>
                         <div class="col-md-4">

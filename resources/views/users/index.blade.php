@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'المستخدمون')
+@section('title', 'الفنادق')
 
 @section('content_header')
-    <h1 class="m-0">إدارة المستخدمين</h1>
+    <h1 class="m-0">إدارة الفنادق</h1>
 @stop
 
 @section('page_content')
@@ -13,11 +13,11 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-md-6">
-                            <h3 class="card-title">قائمة المستخدمين</h3>
+                            <h3 class="card-title">قائمة الفنادق</h3>
                         </div>
                         <div class="col-md-6 text-right">
                             <a href="{{ route('users.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> إضافة مستخدم جديد
+                                <i class="fas fa-plus"></i> إضافة فندق جديد
                             </a>
                         </div>
                     </div>
@@ -72,6 +72,7 @@
                         </thead>
                         <tbody>
                             @forelse($users as $user)
+                            
                                 <tr>
                                     <td><strong>{{ $user->id }}</strong></td>
                                     <td>
@@ -163,7 +164,7 @@
                     
                     Swal.fire({
                         title: 'هل أنت متأكد؟',
-                        text: `هل تريد حذف المستخدم "${userName}"؟`,
+                        text: `هل تريد حذف الفندق "${userName}"؟`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',

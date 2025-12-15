@@ -103,6 +103,11 @@ class InternalBookingController extends Controller
         } else {
             $data['has_return'] = false;
         }
+        if($request->on_phone =='on') {
+            $data['on_phone'] = true;
+        } else {
+            $data['on_phone'] = false;
+        }
         // إذا لم يتم تحديد return_driver_id، نستخدم نفس السائق
         if (! isset($data['return_driver_id'])) {
             $data['return_driver_id'] = $data['driver_id'];

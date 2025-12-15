@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'تعديل بيانات المستخدم')
+@section('title', 'تعديل بيانات الفندق')
 
 @section('content_header')
-    <h1 class="m-0">تعديل بيانات المستخدم</h1>
+    <h1 class="m-0">تعديل بيانات الفندق</h1>
 @stop
 
 @section('page_content')
@@ -11,7 +11,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">بيانات المستخدم</h3>
+                    <h3 class="card-title">بيانات الفندق</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">

@@ -48,6 +48,7 @@ class Booking extends Model
         'has_return',
         'supervisor_id',
         'commission_for_driver',
+        'on_phone',
     ];
 
     /**

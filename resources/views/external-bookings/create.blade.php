@@ -349,6 +349,15 @@
                                     </div>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="on_phone"> على الهاتف <span class="text-danger">*</span></label>
+                                        <input type="checkbox" name="on_phone" id="on_phone" style="width: 1.3em; height: 1.3em;" class="@error('on_phone') is-invalid @enderror">
+                                    </div>
+                                    @error('on_phone')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
                                 <!-- التاريخ والوقت للعودة -->
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -561,26 +570,36 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // When departure FROM changes → set return TO
             var depFromSelect = document.getElementById('departure_from_location_id');
-            var returnFromSelect = document.getElementById('return_from_location_id');
-            if (depFromSelect && returnFromSelect) {
+            var returnToSelect = document.getElementById('return_to_location_id');
+
+            if (depFromSelect && returnToSelect) {
                 depFromSelect.addEventListener('change', function() {
                     if (this.value) {
-                        returnFromSelect.value = this.value;
-                    }
-                });
-            }
-            var depToSelect = document.getElementById('departure_to_location_id');
-            var returnToSelect = document.getElementById('return_to_location_id');
-            if (depToSelect && returnToSelect) {
-                depToSelect.addEventListener('change', function() {
-                    if (this.value) {
+                        console.log('Setting return TO from departure FROM:', this.value);
                         returnToSelect.value = this.value;
                     }
                 });
             }
+
+            // When departure TO changes → set return FROM
+            var depToSelect = document.getElementById('departure_to_location_id');
+            var returnFromSelect = document.getElementById('return_from_location_id');
+
+            if (depToSelect && returnFromSelect) {
+                depToSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        console.log('Setting return FROM from departure TO:', this.value);
+                        returnFromSelect.value = this.value;
+                    }
+                });
+            }
+
+            // Keep the car selection logic (same car for return)
             var depCarSelect = document.getElementById('car_id');
             var returnCarSelect = document.getElementById('return_car_id');
+
             if (depCarSelect && returnCarSelect) {
                 depCarSelect.addEventListener('change', function() {
                     if (this.value) {
@@ -588,8 +607,6 @@
                     }
                 });
             }
-
         });
     </script>
-
 @stop

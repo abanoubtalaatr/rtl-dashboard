@@ -127,6 +127,7 @@ class StoreInternalBookingRequest extends FormRequest
                 }
             ],
             'has_return' => 'nullable',
+            'on_phone' => 'nullable',
         ];
     }
 

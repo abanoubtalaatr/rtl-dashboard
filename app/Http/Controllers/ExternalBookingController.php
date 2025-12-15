@@ -94,6 +94,16 @@ class ExternalBookingController extends Controller
         $data = $request->validated();
         $data['type'] = 'external';
         $data['created_by'] = Auth::id();
+        if($request->has_return =='on') {
+            $data['has_return'] = true;
+        } else {
+            $data['has_return'] = false;
+        }
+        if($request->on_phone =='on') {
+            $data['on_phone'] = true;
+        } else {
+            $data['on_phone'] = false;
+        }
 
         // إذا لم يتم تحديد return_driver_id، نستخدم نفس السائق
         if (! isset($data['return_driver_id'])) {

@@ -28,7 +28,7 @@
                         </div>
                         @php
                         // Base query
-                        $query = \App\Models\Booking::external();
+                        $query = \App\Models\Booking::external()->unreturned();
 
                         // If NOT super admin → filter by created_by
                         if (!Auth::user()->isSuperAdmin()) {
@@ -133,6 +133,7 @@
 
                                     <th>السعر</th>
                                     <th>نوع الدفع</th>
+                                    <th>على الهاتف</th>
                                     <th style="width: 120px;" class="text-center">حالة الإرجاع</th>
                                     <th style="width: 200px;" class="text-center">الإجراءات</th>
                                 </tr>
@@ -182,6 +183,11 @@
                                             <span
                                                 class="badge badge-{{ $booking->payment_type === 'cash' ? 'success' : ($booking->payment_type === 'visa' ? 'primary' : 'warning') }}">
                                                 {{ $booking->payment_type_label }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-{{ $booking->on_phone ? 'success' : 'warning' }}">
+                                                {{ $booking->on_phone ? 'نعم' : 'لا' }}
                                             </span>
                                         </td>
                                         <td class="text-center">
