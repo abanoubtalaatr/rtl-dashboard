@@ -48,15 +48,14 @@
                                             <i class="fas fa-search"></i>
                                         </button>
                                     </div>
-                                    <input type="text" name="search" class="form-control" 
-                                           placeholder="البحث برقم اللوحة أو الموديل أو اللون" 
-                                           value="{{ request('search') }}">
+                                    <input type="text" name="search" class="form-control"
+                                        placeholder="البحث برقم اللوحة أو الموديل أو اللون" value="{{ request('search') }}">
                                 </div>
                             </div>
                         </div>
                     </form>
 
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
                             <i class="fas fa-check-circle mr-2"></i>
                             {{ session('success') }}
@@ -66,7 +65,7 @@
                         </div>
                     @endif
 
-                    @if(session('error'))
+                    @if (session('error'))
                         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
                             <i class="fas fa-exclamation-circle mr-2"></i>
                             {{ session('error') }}
@@ -98,7 +97,7 @@
                                         </td>
                                         <td>{{ $car->model ?? '-' }}</td>
                                         <td>
-                                            @if($car->color)
+                                            @if ($car->color)
                                                 <span class="badge badge-secondary">{{ $car->color }}</span>
                                             @else
                                                 -
@@ -106,25 +105,25 @@
                                         </td>
                                         <td>{{ $car->carType->name ?? '-' }}</td>
                                         <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('cars.show', $car) }}"
-                                                   class="btn btn-info btn-sm" title="عرض">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                        
-                                                <a href="{{ route('cars.edit', $car) }}"
-                                                   class="btn btn-warning btn-sm" title="تعديل">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                        
-                                                <button type="button"
-                                                        class="btn btn-danger btn-sm delete-car"
-                                                        data-id="{{ $car->id }}"
-                                                        data-name="{{ $car->plate_number }}"
+                                            @if (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('cars.show', $car) }}" class="btn btn-info btn-sm"
+                                                        title="عرض">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+
+                                                    <a href="{{ route('cars.edit', $car) }}" class="btn btn-warning btn-sm"
+                                                        title="تعديل">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+
+                                                    <button type="button" class="btn btn-danger btn-sm delete-car"
+                                                        data-id="{{ $car->id }}" data-name="{{ $car->plate_number }}"
                                                         title="حذف">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -167,7 +166,7 @@
                 button.addEventListener('click', function() {
                     const carId = this.getAttribute('data-id');
                     const carName = this.getAttribute('data-name');
-                    
+
                     Swal.fire({
                         title: 'هل أنت متأكد؟',
                         text: `هل تريد حذف السيارة "${carName}"؟`,
@@ -195,4 +194,3 @@
         });
     </script>
 @stop
-

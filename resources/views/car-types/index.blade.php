@@ -77,6 +77,7 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
+                                            @if (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('car-types.show', $carType) }}"
                                                    class="btn btn-info btn-sm" title="عرض">
@@ -96,6 +97,7 @@
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

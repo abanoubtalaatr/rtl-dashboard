@@ -23,7 +23,7 @@ class StoreSupervisorRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id|unique:supervisors,user_id',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 

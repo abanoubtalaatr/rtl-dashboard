@@ -36,6 +36,7 @@
                         <td>{{ $supervisor->user->name ?? 'غير محدد' }}</td>
                         <td>{{ $supervisor->created_at->format('d/m/Y') }}</td>
                         <td>
+                            @if (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                             <a href="{{ route('supervisors.edit', $supervisor) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i>
                             </a>
@@ -45,6 +46,7 @@
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                 @empty

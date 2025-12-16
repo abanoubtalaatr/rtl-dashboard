@@ -10,6 +10,7 @@ use App\Models\Income;
 use App\Models\Booking;
 use App\Models\Company;
 use App\Models\Expense;
+use App\Models\Customer;
 use App\Models\Location;
 use Illuminate\View\View;
 use App\Models\CarExpense;
@@ -113,6 +114,9 @@ class ReportController extends Controller
                 $q->where('name', 'like', '%'.$request->search_driver.'%');
             });
         }
+        if ($request->filled('user_id')) {
+            $query->where('created_by', $request->user_id);
+        }
 
         // Search by room/location
         if ($request->filled('search_room')) {
@@ -127,9 +131,10 @@ class ReportController extends Controller
 
         $bookings = $query->latest('booking_from')->paginate(20)->withQueryString();
         $drivers = Driver::orderBy('name')->get();
+        $users = User::orderBy('name')->get();
         $cars = Car::orderBy('plate_number')->get();
 
-        return view('reports.internal-bookings', compact('bookings', 'drivers', 'cars'));
+        return view('reports.internal-bookings', compact('bookings', 'drivers', 'cars', 'users'));
     }
 
     /**
@@ -160,6 +165,11 @@ class ReportController extends Controller
             $query->where('company_id', $request->company_id);
         }
 
+        // Filter by customer
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
         // Filter by date range
         if ($request->filled('date_from')) {
             $query->whereDate('booking_from', '>=', $request->date_from);
@@ -186,8 +196,9 @@ class ReportController extends Controller
         $drivers = Driver::orderBy('name')->get();
         $cars = Car::orderBy('plate_number')->get();
         $companies = Company::orderBy('name')->get();
+        $customers = Customer::orderBy('name')->get();
 
-        return view('reports.external-bookings', compact('bookings', 'drivers', 'cars', 'companies'));
+        return view('reports.external-bookings', compact('bookings', 'drivers', 'cars', 'companies', 'customers'));
     }
 
     /**

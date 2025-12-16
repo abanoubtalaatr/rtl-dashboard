@@ -18,7 +18,7 @@ class SupervisorController extends Controller
 
     public function create()
     {
-        $users = User::whereDoesntHave('supervisor')->pluck('name', 'id');
+        $users = User::pluck('name', 'id');
 
         return view('supervisors.create', compact('users'));
     }

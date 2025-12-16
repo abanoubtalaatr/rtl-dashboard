@@ -88,43 +88,6 @@ class StoreInternalBookingRequest extends FormRequest
             'return_car_id' => [
                 'nullable',
                 'exists:cars,id',
-                function ($attribute, $value, $fail) {
-                    // Skip if return car is not selected or if has_return is not checked
-                    if (!$value || !$this->input('has_return')) {
-                        return;
-                    }
-
-                    $bookingTo = $this->input('booking_to');
-                    $returnDuration = $this->input('return_duration_minutes', 0);
-
-                    if (!$bookingTo || !$returnDuration) {
-                        return;
-                    }
-
-                    // Calculate return trip time
-                    $returnFrom = $bookingTo;
-                    $returnTo = date('Y-m-d H:i:s', strtotime("{$bookingTo} +{$returnDuration} minutes"));
-
-                    // Check for overlapping bookings for the return car
-                    $overlappingReturnBooking = Booking::where('car_id', $value)
-                        ->where(function ($query) use ($returnFrom, $returnTo) {
-                            $query->where(function ($q) use ($returnFrom, $returnTo) {
-                                $q->where('booking_from', '<=', $returnFrom)
-                                    ->where('booking_to', '>', $returnFrom);
-                            })->orWhere(function ($q) use ($returnFrom, $returnTo) {
-                                $q->where('booking_from', '<', $returnTo)
-                                    ->where('booking_to', '>=', $returnTo);
-                            })->orWhere(function ($q) use ($returnFrom, $returnTo) {
-                                $q->where('booking_from', '>=', $returnFrom)
-                                    ->where('booking_to', '<=', $returnTo);
-                            });
-                        })
-                        ->exists();
-
-                    if ($overlappingReturnBooking) {
-                        $fail('سيارة العودة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
-                    }
-                }
             ],
             'has_return' => 'nullable',
             'on_phone' => 'nullable',

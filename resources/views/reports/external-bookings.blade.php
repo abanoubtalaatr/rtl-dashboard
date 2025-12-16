@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col-12">
             <!-- Filters Card -->
-            <div class="card card-success">
+            <div class="card card-success no-print">
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="fas fa-filter"></i> الفلاتر والبحث
@@ -27,7 +27,7 @@
                 <div class="card-body">
                     <form method="GET" action="{{ route('reports.external-bookings') }}">
                         <div class="row">
-                            <!-- Driver Filter -->
+                            <!-- All your filters remain exactly as before -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>السائق</label>
@@ -42,7 +42,6 @@
                                 </div>
                             </div>
 
-                            <!-- Car Filter -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>السيارة</label>
@@ -57,10 +56,9 @@
                                 </div>
                             </div>
 
-                            <!-- Company Filter -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label>الشركة</label>
+                                    <label>الشركه المنفذه</label>
                                     <select name="company_id" class="form-control" style="padding: unset;">
                                         <option value="">الكل</option>
                                         @foreach($companies as $company)
@@ -72,7 +70,20 @@
                                 </div>
                             </div>
 
-                            <!-- Payment Type Filter -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>العميل</label>
+                                    <select name="customer_id" class="form-control" style="padding: unset;">
+                                        <option value="">الكل</option>
+                                        @foreach($customers as $customer)
+                                            <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                                                {{ $customer->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>نوع الدفع</label>
@@ -85,7 +96,6 @@
                                 </div>
                             </div>
 
-                            <!-- Date From -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>من تاريخ</label>
@@ -93,7 +103,6 @@
                                 </div>
                             </div>
 
-                            <!-- Date To -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>إلى تاريخ</label>
@@ -101,7 +110,6 @@
                                 </div>
                             </div>
 
-                            <!-- Search Driver -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>بحث بالسائق</label>
@@ -109,7 +117,6 @@
                                 </div>
                             </div>
 
-                            <!-- Search Company -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>بحث بالشركة</label>
@@ -117,7 +124,6 @@
                                 </div>
                             </div>
 
-                            <!-- Buttons -->
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">
@@ -135,28 +141,41 @@
 
             <!-- Results Card -->
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center no-print">
                     <h3 class="card-title">
                         <i class="fas fa-list"></i> نتائج البحث
                         <span class="badge badge-success">{{ $bookings->total() }} حجز</span>
                     </h3>
+                    <button onclick="window.print()" class="btn btn-info btn-sm">
+                        <i class="fas fa-print"></i> طباعة النتائج
+                    </button>
                 </div>
+
+                <!-- Print Header (only visible when printing) -->
+                <div class="text-center py-4 print-only">
+                    <h2 class="mb-2">تقرير الحجوزات الخارجية</h2>
+                    <p class="lead mb-0">إجمالي عدد الحجوزات: <strong>{{ $bookings->total() }}</strong></p>
+                    <hr class="my-4">
+                </div>
+
                 <div class="card-body table-responsive p-0">
-                    <table class="table table-hover table-striped">
-                        <thead>
+                    <table class="table table-bordered table-striped" id="report-table">
+                        <thead class="bg-light">
                             <tr>
-                                <th style="width: 60px;">#</th>
-                                <th style="width: 100px;">التاريخ</th>
-                                <th style="width: 80px;">الوقت</th>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
                                 <th>السائق</th>
                                 <th>السيارة</th>
                                 <th>الشركة</th>
                                 <th>العميل</th>
                                 <th>من</th>
                                 <th>إلى</th>
-                                <th style="width: 100px;">نوع الدفع</th>
-                                <th style="width: 100px;">اكرامية السائق</th>
-                                <th style="width: 180px;" class="text-center">إجراءات</th>
+                                <th>نوع الدفع</th>
+                                <th>اكرامية السائق</th>
+                                <th>التكلفة</th>
+                                <th>ليه عودة</th>
+                                <th class="no-print">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -164,84 +183,136 @@
                                 <tr>
                                     <td><strong>{{ $booking->id }}</strong></td>
                                     <td>{{ $booking->date ? $booking->date->format('Y-m-d') : '-' }}</td>
-                                    <td>
-                                        <span class="badge badge-secondary">
-                                            {{ $booking->time ?? '-' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-user-circle text-primary"></i>
-                                        {{ $booking->driver->name ?? '-' }}
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-car text-info"></i>
-                                        {{ $booking->car->plate_number ?? '-' }}
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-building text-warning"></i>
-                                        <strong>{{ $booking->company->name ?? '-' }}</strong>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-user text-secondary"></i>
-                                        {{ $booking->customer->name ?? '-' }}
-                                    </td>
-                                    <td>
-                                        <div style="max-width: 120px;">
-                                            <i class="fas fa-map-marker-alt text-success"></i>
-                                            {{ $booking->fromLocation->name ?? $booking->departure_from ?? '-' }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style="max-width: 120px;">
-                                            <i class="fas fa-map-marker-alt text-danger"></i>
-                                            {{ $booking->toLocation->name ?? $booking->departure_to ?? '-' }}
-                                        </div>
-                                    </td>
+                                    <td><span class="badge badge-secondary">{{ $booking->time ?? '-' }}</span></td>
+                                    <td>{{ $booking->driver->name ?? '-' }}</td>
+                                    <td>{{ $booking->car->plate_number ?? '-' }}</td>
+                                    <td><strong>{{ $booking->company->name ?? '-' }}</strong></td>
+                                    <td>{{ $booking->customer->name ?? '-' }}</td>
+                                    <td>{{ $booking->fromLocation->name ?? $booking->departure_from ?? '-' }}</td>
+                                    <td>{{ $booking->toLocation->name ?? $booking->departure_to ?? '-' }}</td>
                                     <td>
                                         @if($booking->payment_type === 'cash')
-                                            <span class="badge badge-success">💵 نقدي</span>
+                                            <span class="badge badge-success">نقدي</span>
                                         @elseif($booking->payment_type === 'visa')
-                                            <span class="badge badge-info">💳 فيزا</span>
+                                            <span class="badge badge-info">فيزا</span>
                                         @elseif($booking->payment_type === 'credit')
-                                            <span class="badge badge-warning">🏦 أجل</span>
+                                            <span class="badge badge-warning">أجل</span>
                                         @else
                                             <span class="badge badge-secondary">{{ $booking->payment_type }}</span>
                                         @endif
                                     </td>
-                                    <td><strong class="text-success">{{ number_format($booking->commission_for_driver, 2) }}</strong></td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
-                                            <a href="{{ route('reports.external.print-client', $booking) }}" 
-                                               class="btn btn-sm btn-success" 
-                                               target="_blank"
-                                               title="طباعة للعميل">
-                                                <i class="fas fa-print"></i> عميل
-                                            </a>
-                                            {{-- <a href="{{ route('reports.external.print-driver', $booking) }}" 
-                                               class="btn btn-sm btn-primary" 
-                                               target="_blank"
-                                               title="طباعة للسائق">
-                                                <i class="fas fa-print"></i> سائق
-                                            </a> --}}
-                                        </div>
+                                    <td class="text-success"><strong>{{ number_format($booking->commission_for_driver, 2) }}</strong></td>
+                                    <td class="text-success"><strong>{{ number_format($booking->cost, 2) }}</strong></td>
+                                    <td>
+                                        @if($booking->has_return)
+                                            <span class="badge badge-success">نعم</span>
+                                        @else
+                                            <span class="badge badge-danger">لا</span>
+                                        @endif
+                                    </td>
+                                    <td class="no-print text-center">
+                                        <a href="{{ route('reports.external.print-client', $booking) }}" class="btn btn-sm btn-success" target="_blank">
+                                            <i class="fas fa-print"></i> عميل
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="text-center py-5">
-                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                        <p class="text-muted">لا توجد نتائج</p>
-                                    </td>
+                                    <td colspan="14" class="text-center py-5">لا توجد نتائج</td>
                                 </tr>
                             @endforelse
                         </tbody>
+
+                        @if($bookings->isNotEmpty())
+                            <tfoot class="font-weight-bold">
+                                <tr class="bg-light">
+                                    <td colspan="10" class="text-right">الإجمالي:</td>
+                                    <td class="text-success text-center">
+                                        <strong>{{ number_format($bookings->sum('commission_for_driver'), 2) }}</strong>
+                                        @if($bookings->total() > $bookings->count())
+                                            <small class="d-block text-muted">(الصفحة الحالية)</small>
+                                        @endif
+                                    </td>
+                                    <td class="text-success text-center">
+                                        <strong>{{ number_format($bookings->sum('cost'), 2) }}</strong>
+                                        @if($bookings->total() > $bookings->count())
+                                            <small class="d-block text-muted">
+                                                (الصفحة الحالية)<br>
+                                                إجمالي الكل: {{ number_format($totalCost ?? $bookings->sum('cost'), 2) }}
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        @endif
                     </table>
                 </div>
-                <div class="card-footer clearfix">
+
+                <div class="card-footer clearfix no-print">
                     {{ $bookings->links() }}
                 </div>
             </div>
         </div>
     </div>
-@stop
 
+    <!-- Enhanced Print CSS -->
+    <style>
+        @media print {
+            /* Hide all non-essential elements */
+            .no-print,
+            .card-header,
+            .card-footer,
+            .filters-card {
+                display: none !important;
+            }
+
+            /* Show only the table and print header */
+            body * {
+                visibility: hidden;
+            }
+            .print-only, #report-table, #report-table * {
+                visibility: visible;
+            }
+
+            .print-only {
+                display: block !important;
+                position: relative;
+            }
+
+            #report-table {
+                position: relative;
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            /* Clean table styling for print */
+            .table {
+                border-collapse: collapse !important;
+            }
+            .table th,
+            .table td {
+                border: 1px solid #000 !important;
+                padding: 8px !important;
+                text-align: center;
+            }
+            .table thead th {
+                background-color: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            .bg-light {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+            }
+            body {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+
+        /* Hide print header on screen */
+        .print-only {
+            display: none;
+        }
+    </style>
+@stop

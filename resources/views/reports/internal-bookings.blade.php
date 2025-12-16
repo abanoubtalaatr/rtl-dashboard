@@ -27,11 +27,10 @@
                 <div class="card-body">
                     <form method="GET" action="{{ route('reports.internal-bookings') }}">
                         <div class="row">
-                            <!-- Driver Filter -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>السائق</label>
-                                    <select name="driver_id" class="form-control">
+                                    <select name="driver_id" class="form-control" style="padding: unset;">
                                         <option value="">الكل</option>
                                         @foreach($drivers as $driver)
                                             <option value="{{ $driver->id }}" {{ request('driver_id') == $driver->id ? 'selected' : '' }}>
@@ -42,11 +41,10 @@
                                 </div>
                             </div>
 
-                            <!-- Car Filter -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>السيارة</label>
-                                    <select name="car_id" class="form-control">
+                                    <select name="car_id" class="form-control" style="padding: unset;">
                                         <option value="">الكل</option>
                                         @foreach($cars as $car)
                                             <option value="{{ $car->id }}" {{ request('car_id') == $car->id ? 'selected' : '' }}>
@@ -57,11 +55,10 @@
                                 </div>
                             </div>
 
-                            <!-- Payment Type Filter -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     <label>نوع الدفع</label>
-                                    <select name="payment_type" class="form-control">
+                                    <select name="payment_type" class="form-control" style="padding: unset;">
                                         <option value="">الكل</option>
                                         <option value="cash" {{ request('payment_type') == 'cash' ? 'selected' : '' }}>نقدي</option>
                                         <option value="card" {{ request('payment_type') == 'card' ? 'selected' : '' }}>بطاقة</option>
@@ -70,7 +67,6 @@
                                 </div>
                             </div>
 
-                            <!-- Date From -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>من تاريخ</label>
@@ -78,7 +74,6 @@
                                 </div>
                             </div>
 
-                            <!-- Date To -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>إلى تاريخ</label>
@@ -86,7 +81,6 @@
                                 </div>
                             </div>
 
-                            <!-- Search Driver -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>بحث بالسائق</label>
@@ -94,7 +88,6 @@
                                 </div>
                             </div>
 
-                            <!-- Search Room/Location -->
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>بحث بالموقع/الغرفة</label>
@@ -102,7 +95,20 @@
                                 </div>
                             </div>
 
-                            <!-- Buttons -->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>الفنادق</label>
+                                    <select name="user_id" class="form-control" style="padding: unset;">
+                                        <option value="">كل الفنادق</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label>&nbsp;</label>
@@ -123,17 +129,21 @@
 
             <!-- Results Card -->
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">
                         <i class="fas fa-list"></i> نتائج البحث
                         <span class="badge badge-info">{{ $bookings->total() }} حجز</span>
                     </h3>
+                    <button onclick="window.print()" class="btn btn-info btn-sm">
+                        <i class="fas fa-print"></i> طباعة النتائج
+                    </button>
                 </div>
                 <div class="card-body table-responsive p-0">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-hover table-striped" id="printable-table">
                         <thead>
                             <tr>
                                 <th style="width: 60px;">#</th>
+                                <th style="width: 60px;">المستخدم</th>
                                 <th style="width: 100px;">التاريخ</th>
                                 <th style="width: 80px;">الوقت</th>
                                 <th>السائق</th>
@@ -142,13 +152,15 @@
                                 <th>إلى (وجهة)</th>
                                 <th style="width: 100px;">نوع الدفع</th>
                                 <th style="width: 100px;">التكلفة</th>
-                                <th style="width: 180px;" class="text-center">إجراءات</th>
+                                <th style="width: 100px;">ليه عودة</th>
+                                <th style="width: 180px;" class="text-center no-print">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($bookings as $booking)
                                 <tr>
                                     <td><strong>{{ $booking->id }}</strong></td>
+                                    <td>{{ $booking->creator->name ?? '-' }}</td>
                                     <td>{{ $booking->date ? $booking->date->format('Y-m-d') : '-' }}</td>
                                     <td>
                                         <span class="badge badge-secondary">
@@ -193,7 +205,14 @@
                                         @endif
                                     </td>
                                     <td><strong class="text-success">{{ number_format($booking->price, 2) }}</strong></td>
-                                    <td class="text-center">
+                                    <td>
+                                        @if($booking->has_return)
+                                            <span class="badge badge-success">نعم</span>
+                                        @else
+                                            <span class="badge badge-danger">لا</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center no-print">
                                         <div class="btn-group">
                                             <a href="{{ route('reports.internal.print-client', $booking) }}" 
                                                class="btn btn-sm btn-success" 
@@ -201,24 +220,36 @@
                                                title="طباعة للعميل">
                                                 <i class="fas fa-print"></i> عميل
                                             </a>
-                                            <a href="{{ route('reports.internal.print-driver', $booking) }}" 
-                                               class="btn btn-sm btn-primary" 
-                                               target="_blank"
-                                               title="طباعة للسائق">
-                                                <i class="fas fa-print"></i> سائق
-                                            </a>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center py-5">
+                                    <td colspan="12" class="text-center py-5">
                                         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                         <p class="text-muted">لا توجد نتائج</p>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
+
+                        @if($bookings->isNotEmpty())
+                            <tfoot>
+                                <tr class="font-weight-bold bg-light">
+                                    <td colspan="9" class="text-right align-middle">الإجمالي:</td>
+                                    <td class="text-success align-middle text-center bg-success text-white">
+                                        <strong>{{ number_format($bookings->sum('price'), 2) }}</strong>
+                                        @if($bookings->total() > $bookings->count())
+                                            <small class="text-white d-block opacity-75">
+                                                (الصفحة الحالية فقط)<br>
+                                                إجمالي الكل: {{ number_format($totalAllPrice ?? $bookings->sum('price'), 2) }}
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        @endif
                     </table>
                 </div>
                 <div class="card-footer clearfix">
@@ -227,5 +258,31 @@
             </div>
         </div>
     </div>
-@stop
 
+    <!-- Print Styles -->
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #printable-table, #printable-table * {
+                visibility: visible;
+            }
+            #printable-table {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .card-header .btn {
+                display: none;
+            }
+            .card-footer {
+                display: none;
+            }
+        }
+    </style>
+@stop

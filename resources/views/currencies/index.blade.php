@@ -65,6 +65,7 @@
                                     <td>{{ $currency->id }}</td>
                                     <td>{{ $currency->name }}</td>
                                     <td>
+                                        @if (auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('currencies.show', $currency) }}"
                                                class="btn btn-info btn-sm me-1 mx-1" title="عرض">
@@ -87,6 +88,7 @@
                                                 حذف
                                             </button>
                                         </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
