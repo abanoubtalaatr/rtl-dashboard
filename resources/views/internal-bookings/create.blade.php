@@ -39,9 +39,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">بيانات الحجز الداخلي</h3>
-                </div>
+                
                 <form action="{{ route('internal-bookings.store') }}" method="POST">
                     @csrf
                     <div class="card-body">
