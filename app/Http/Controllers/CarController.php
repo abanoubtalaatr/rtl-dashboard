@@ -15,23 +15,44 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request)
     {
-        $query = Car::query();
+        $query = Car::with('carType');
 
-        // Search functionality
+        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('plate_number', 'like', "%{$search}%")
-                    ->orWhere('model', 'like', "%{$search}%")
-                    ->orWhere('color', 'like', "%{$search}%");
+                  ->orWhere('model', 'like', "%{$search}%")
+                  ->orWhere('color', 'like', "%{$search}%");
             });
         }
 
-        $cars = $query->latest()->paginate(10)->withQueryString();
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $cars = $query->latest()->paginate(15);
 
         return view('cars.index', compact('cars'));
+    }
+
+      /**
+     * Update car status
+     */
+    public function updateStatus(Request $request, Car $car)
+    {
+        $request->validate([
+            'status' => 'required|in:parking,rest,traffic,maintenance,working',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $car->updateStatus($request->status, $request->notes);
+
+        return redirect()->route('cars.index')
+            ->with('success', 'تم تحديث حالة السيارة بنجاح');
     }
 
     /**

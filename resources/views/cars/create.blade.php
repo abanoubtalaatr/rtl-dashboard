@@ -49,6 +49,28 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">الحالة</label>
+                                    <select name="status" id="status" class="form-control" required>
+                                        @foreach (\App\Models\Car::getStatusOptions() as $value => $label)
+                                            <option value="{{ $value }}"
+                                                {{ old('status', $car->status ?? 'parking') == $value ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status_notes">ملاحظات الحالة (اختياري)</label>
+                                    <textarea name="status_notes" id="status_notes" class="form-control" rows="3"
+                                        placeholder="أضف أي ملاحظات عن حالة السيارة...">{{ old('status_notes', $car->status_notes ?? '') }}</textarea>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Row 2: Color + Car Type -->
                         <div class="row">

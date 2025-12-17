@@ -81,6 +81,8 @@ Route::middleware('auth')->group(function () {
 
     // Cars Resource Routes
     Route::resource('cars', CarController::class);
+    Route::patch('/cars/{car}/update-status', [CarController::class, 'updateStatus'])
+    ->name('cars.update-status');
     Route::get('availability', [CarController::class, 'availability'])->name('cars.availability');
 
     // Car Expenses Resource Routes

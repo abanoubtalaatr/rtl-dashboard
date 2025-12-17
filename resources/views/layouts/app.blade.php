@@ -617,7 +617,9 @@
 @section('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
+            console.log('DOMadsContentLoaded');
+            body.classList.remove('sidebar-open');
+                    body.classList.add('sidebar-closed');
             // Function to handle sidebar toggle
             function initializeMobileSidebar() {
                 const body = document.body;

@@ -30,151 +30,32 @@
 @stop
 
 @section('page_content')
-    @php
-        $cards = [
-            [
-                'label' => 'السيارات',
-                'value' => $stats['cars'] ?? 0,
-                'icon' => 'fas fa-car',
-                'gradient' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'route' => 'cars.index',
-                'description' => 'إجمالي السيارات المسجلة'
-            ],
-            [
-                'label' => 'العملاء',
-                'value' => $stats['customers'] ?? 0,
-                'icon' => 'fas fa-user-friends',
-                'gradient' => 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'route' => 'customers.index',
-                'description' => 'إجمالي قاعدة العملاء'
-            ],
-            [
-                'label' => 'الحجوزات الداخلية',
-                'value' => $stats['internal_bookings'] ?? 0,
-                'icon' => 'fas fa-calendar-check',
-                'gradient' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'route' => 'internal-bookings.index',
-                'description' => 'إجمالي الحجوزات'
-            ],
-
-            [
-                'label' => 'الحجوزات الخارجية',
-                'value' => $stats['external_bookings'] ?? 0,
-                'icon' => 'fas fa-calendar-check',
-                'gradient' => 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'route' => 'external-bookings.index',
-                'description' => 'إجمالي الحجوزات'
-            ],
-            [
-                'label' => 'المستخدمين',
-                'value' => $stats['users'] ?? 0,
-                'icon' => 'fas fa-users',
-                'gradient' => 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'route' => 'users.index',
-                'description' => 'مستخدمي النظام'
-            ],
-            [
-                'label' => 'العملاء المميزين',
-                'value' => $stats['clients'] ?? 0,
-                'icon' => 'fas fa-user-tie',
-                'gradient' => 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'route' => 'customers.index',
-                'description' => 'العملاء الخاصين'
-            ],
-            [
-                'label' => 'الشركات',
-                'value' => $stats['companies'] ?? 0,
-                'icon' => 'fas fa-building',
-                'gradient' => 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-                'route' => 'companies.index',
-                'description' => 'الشركات المسجلة'
-            ],
-        ];
-    @endphp
-
-    <!-- Statistics Cards -->
-    <div class="row">
-        @foreach ($cards as $card)
-            <div class="col-12 col-sm-6 col-lg-4 mb-4">
-                <a href="{{ route($card['route']) }}" class="text-decoration-none">
-                    <div class="stat-card shadow-sm" style="background: {{ $card['gradient'] }};">
-                        <div class="stat-card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="stat-info">
-                                    <h3 class="stat-value mb-1">{{ number_format($card['value']) }}</h3>
-                                    <p class="stat-label mb-1">{{ $card['label'] }}</p>
-                                    <small class="stat-description">{{ $card['description'] }}</small>
-                                </div>
-                                <div class="stat-icon">
-                                    <i class="{{ $card['icon'] }}"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card-footer">
-                            <span class="view-more">
-                                <i class="fas fa-arrow-left mr-1"></i>
-                                عرض التفاصيل
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        @endforeach
-    </div>
-
     <!-- Recent Activity Section -->
-    <div class="row mt-4">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h3 class="card-title">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        نظرة عامة سريعة
-                    </h3>
+    <div class="row mt-5">
+        <div class="col-12">
+            <!-- Responsive flex container for the two logos -->
+            <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 gap-md-5 py-4">
+                
+                <!-- Supervisor Image / Signature -->
+                <div class="text-center order-1 order-md-1">
+                    <img 
+                        src="{{ asset('images/nagy.jpeg') }}" 
+                        alt="Supervisor Signature / Stamp" 
+                        class="img-fluid rounded shadow-sm" 
+                        style="max-height: 280px; max-width: 100%; height: auto; object-fit: contain;">
+                    <p class="mt-3 mb-0 text-muted fw-medium">Supervisor Signature</p>
                 </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="info-box-content">
-                                <span class="info-box-text text-muted">الحجوزات النشطة</span>
-                                <span class="info-box-number h4">{{ $stats['internal_bookings'] + $stats['external_bookings'] }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="info-box-content">
-                                <span class="info-box-text text-muted">السيارات المتاحة</span>
-                                <span class="info-box-number h4">{{ $stats['cars'] }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="info-box-content">
-                                <span class="info-box-text text-muted">عملاء جدد هذا الشهر</span>
-                                <span class="info-box-number h4">{{ $stats['customers'] }}</span>
-                            </div>
-                        </div>
-                    </div>
+                
+                <!-- Company Logo -->
+                <div class="text-center order-2 order-md-2">
+                    <img 
+                        src="{{ asset('images/logo.jpeg') }}" 
+                        alt="New Sinderella Travel Logo" 
+                        class="img-fluid rounded shadow-sm" 
+                        style="max-height: 280px; max-width: 100%; height: auto; object-fit: contain;">
+                    <p class="mt-3 mb-0 text-muted fw-medium">New Sinderella Travel</p>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h3 class="card-title">
-                        <i class="fas fa-bell mr-2"></i>
-                        إشعارات سريعة
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info mb-2">
-                        <i class="fas fa-info-circle mr-2"></i>
-                        <small>النظام يعمل بشكل طبيعي</small>
-                    </div>
-                    <div class="alert alert-success mb-0">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <small>جميع الخدمات متاحة</small>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -191,6 +72,14 @@
             transition: all 0.3s ease;
             position: relative;
         }
+                                    <td>John Doe</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary">View All</a>
 
         .stat-card:hover {
             transform: translateY(-5px);

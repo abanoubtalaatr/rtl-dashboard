@@ -24,12 +24,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="plate_number">رقم اللوحة <span class="text-danger">*</span></label>
-                                    <input type="text"
-                                           class="form-control @error('plate_number') is-invalid @enderror"
-                                           id="plate_number"
-                                           name="plate_number"
-                                           value="{{ old('plate_number', $car->plate_number) }}"
-                                           required>
+                                    <input type="text" class="form-control @error('plate_number') is-invalid @enderror"
+                                        id="plate_number" name="plate_number"
+                                        value="{{ old('plate_number', $car->plate_number) }}" required>
                                     @error('plate_number')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -39,14 +36,33 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="model">الموديل</label>
-                                    <input type="text"
-                                           class="form-control @error('model') is-invalid @enderror"
-                                           id="model"
-                                           name="model"
-                                           value="{{ old('model', $car->model) }}">
+                                    <input type="text" class="form-control @error('model') is-invalid @enderror"
+                                        id="model" name="model" value="{{ old('model', $car->model) }}">
                                     @error('model')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">الحالة</label>
+                                    <select name="status" id="status" class="form-control" required>
+                                        @foreach (\App\Models\Car::getStatusOptions() as $value => $label)
+                                            <option value="{{ $value }}"
+                                                {{ old('status', $car->status ?? 'parking') == $value ? 'selected' : '' }}>
+                                                {{ $label }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status_notes">ملاحظات الحالة (اختياري)</label>
+                                    <textarea name="status_notes" id="status_notes" class="form-control" rows="3"
+                                        placeholder="أضف أي ملاحظات عن حالة السيارة...">{{ old('status_notes', $car->status_notes ?? '') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -56,11 +72,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="color">اللون</label>
-                                    <input type="text"
-                                           class="form-control @error('color') is-invalid @enderror"
-                                           id="color"
-                                           name="color"
-                                           value="{{ old('color', $car->color) }}">
+                                    <input type="text" class="form-control @error('color') is-invalid @enderror"
+                                        id="color" name="color" value="{{ old('color', $car->color) }}">
                                     @error('color')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -70,12 +83,11 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="car_type_id">نوع السيارة <span class="text-danger">*</span></label>
-                                    <select style="padding: unset;" class="form-control @error('car_type_id') is-invalid @enderror"
-                                            id="car_type_id"
-                                            name="car_type_id"
-                                            required>
+                                    <select style="padding: unset;"
+                                        class="form-control @error('car_type_id') is-invalid @enderror" id="car_type_id"
+                                        name="car_type_id" required>
                                         <option value="">اختر النوع</option>
-                                        @foreach($carTypes as $type)
+                                        @foreach ($carTypes as $type)
                                             <option value="{{ $type->id }}"
                                                 {{ old('car_type_id', $car->car_type_id) == $type->id ? 'selected' : '' }}>
                                                 {{ $type->name }}

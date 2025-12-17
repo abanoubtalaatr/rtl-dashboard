@@ -94,8 +94,9 @@ class InternalBookingController extends Controller
      */
     public function store(StoreInternalBookingRequest $request)
     {
-
+        
         $data = $request->validated();
+        
         $data['type'] = 'internal';
         $data['created_by'] = Auth::id();
         if($request->has_return =='on') {

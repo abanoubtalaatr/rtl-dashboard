@@ -1,325 +1,207 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فاتورة حجز خارجي - رقم {{ $booking->id }}</title>
+    <title>إيصال - نيو سندريلا</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
         * {
-            font-family: 'Cairo', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: #f9f9f9;
             padding: 20px;
-            background: #f5f5f5;
         }
 
-        .invoice {
-            max-width: 800px;
+        .receipt {
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            padding: 40px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 40px 60px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 20px;
+        }
+
+        .top-line {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #28a745;
-        }
-
-        .company-info {
-            flex: 1;
-        }
-
-        .company-info h1 {
-            color: #28a745;
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-
-        .company-info p {
-            color: #666;
-            margin: 3px 0;
-        }
-
-        .invoice-badge {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .invoice-badge strong {
-            display: block;
-            font-size: 24px;
-        }
-
-        .customer-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .customer-section h3 {
-            color: #495057;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 10px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px dotted #dee2e6;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .info-value {
-            color: #212529;
-        }
-
-        .service-details {
-            margin: 30px 0;
-        }
-
-        .service-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .service-table th {
-            background: #28a745;
-            color: white;
-            padding: 15px;
-            text-align: right;
-        }
-
-        .service-table td {
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .service-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .total-section {
-            background: #d4edda;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .total-section h3 {
-            color: #155724;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .total-amount {
-            font-size: 42px;
-            font-weight: bold;
-            color: #155724;
-        }
-
-        .payment-info {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .payment-info strong {
-            color: #856404;
             font-size: 18px;
         }
 
-        .terms {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
+        .invoice-number {
+            font-weight: bold;
+            color: #000;
         }
 
-        .terms h4 {
-            color: #495057;
-            margin-bottom: 10px;
+        .logo {
+            width: 80px;
+            height: auto;
         }
 
-        .terms ul {
-            padding-right: 20px;
+        .field {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 20px;
+            font-size: 18px;
+            line-height: 1.8;
         }
 
-        .terms li {
-            margin-bottom: 8px;
-            color: #6c757d;
+        .label {
+            width: 140px;
+            font-weight: bold;
+        }
+
+        .value {
+            flex: 1;
+            border-bottom: 1px solid #000;
+            min-height: 30px;
+            padding-right: 10px;
+        }
+
+        .inline-fields {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .inline-field {
+            flex: 1;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .signature-line {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        .signature {
+            flex: 1;
+            text-align: center;
+        }
+
+        .signature label {
+            display: block;
+            margin-bottom: 40px;
+            font-weight: bold;
         }
 
         .footer {
-            text-align: center;
-            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
             padding-top: 20px;
-            border-top: 2px solid #dee2e6;
-            color: #6c757d;
+            border-top: 1px solid #000;
+            font-size: 16px;
         }
 
         @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .invoice {
-                box-shadow: none;
-                padding: 20px;
-            }
-
-            @page {
-                margin: 1cm;
-            }
+            body { background: white; padding: 0; }
+            .receipt { box-shadow: none; border: none; padding: 30px 40px; }
+            @page { margin: 1cm; }
         }
     </style>
 </head>
-<body>
-    <div class="invoice">
+<body onload="window.print()">
+    <div class="receipt">
+        <!-- Header -->
         <div class="header">
-            <div class="company-info">
-                <h1>🚗 نيو سندريلا للنقل السياحي</h1>
-                <p>📞 للاستفسار: 01234567890</p>
-                <p>📧 البريد: info@newcinderella.com</p>
+            <div class="header-title">Taxi Service Offered from New Cinderella Travel</div>
+            
+            <div class="top-line">
+                <div>
+                    <span>Date:</span>
+                    <span class="value" style="display:inline-block; width:200px; margin-right:10px;">
+                        {{ $booking->created_at->format('d/m/Y') }}
+                    </span>
+                </div>
+                <div class="invoice-number">{{ str_pad($booking->id, 8, '0', STR_PAD_LEFT) }}</div>
+                <div>
+                    <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="logo"> <!-- Replace with your actual logo path -->
+                </div>
             </div>
-            <div class="invoice-badge">
-                <strong>فاتورة #{{ $booking->id }}</strong>
-                <small>{{ $booking->date->format('Y-m-d') }}</small>
+        </div>
+
+        <!-- Main Fields -->
+        <div class="field">
+            <span class="label">Customer Name:</span>
+            <div class="value">{{ $booking->customer->name ?? '-' }}</div>
+        </div>
+
+        <div class="inline-fields">
+            <div class="inline-field">
+                <span class="label">From:</span>
+                <div class="value">{{ $booking->fromLocation->name ?? $booking->departure_from ?? '-' }}</div>
+            </div>
+            <div class="inline-field">
+                <span class="label">To:</span>
+                <div class="value">{{ $booking->toLocation->name ?? $booking->departure_to ?? '-' }}</div>
             </div>
         </div>
 
-        <div class="customer-section">
-            <h3>📋 بيانات العميل</h3>
-            <div class="info-row">
-                <span class="info-label">👤 اسم العميل:</span>
-                <span class="info-value">{{ $booking->customer->name ?? '-' }}</span>
+        <div class="inline-fields">
+            <div class="inline-field">
+                <span class="label">Pax:</span>
+                <div class="value">{{ $booking->number_of_people ?? '-' }}</div>
             </div>
-            <div class="info-row">
-                <span class="info-label">📱 رقم الهاتف:</span>
-                <span class="info-value">{{ $booking->customer->phone ?? '-' }}</span>
+            <div class="inline-field">
+                <span class="label">Company Name:</span>
+                <div class="value">{{ $booking->company->name ?? '-' }}</div>
             </div>
-            @if($booking->company)
-            <div class="info-row">
-                <span class="info-label">🏢 الشركة:</span>
-                <span class="info-value">{{ $booking->company->name }}</span>
+        </div>
+
+        <div class="field" style="margin-top: 20px;">
+            <span class="label">Price:</span>
+            <div class="value"> {{ $booking->currency->name ?? 'EGP' }} {{ number_format($booking->price, 0) }} .</div>
+        </div>
+
+        <div class="inline-fields">
+            <div class="inline-field">
+                <span class="label">Phone No:</span>
+                <div class="value">{{ $booking->customer_phone ?? '-' }}</div>
             </div>
-            @endif
+            <div class="inline-field">
+                <span class="label">Driver:</span>
+                <div class="value">{{ $booking->driver->name ?? '-' }}</div>
+            </div>
+                        
+            
         </div>
 
-        <div class="service-details">
-            <table class="service-table">
-                <thead>
-                    <tr>
-                        <th>البيان</th>
-                        <th>التفاصيل</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>📅 تاريخ الخدمة</strong></td>
-                        <td>{{ $booking->date->format('Y-m-d') }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>🕐 وقت الخدمة</strong></td>
-                        <td>{{ $booking->time ?? 'غير محدد' }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>👤 اسم السائق</strong></td>
-                        <td>{{ $booking->driver->name ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>📱 رقم السائق</strong></td>
-                        <td>{{ $booking->driver->phone ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>🚙 السيارة</strong></td>
-                        <td>{{ $booking->car->plate_number ?? '-' }} - {{ $booking->car->model ?? '' }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>📍 نوع الخدمة</strong></td>
-                        <td>نقل سياحي خارجي</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="inline-field">
+            <span class="label">Supervisor:</span>
+            <div class="value">{{ $booking->supervisor->name ?? '-' }}</div>
+            <div style="border-bottom:1px solid #000; height:50px;"></div>
         </div>
-
-        <div class="payment-info">
-            <strong>💳 طريقة الدفع: 
-                @if($booking->payment_type === 'cash')
-                    نقدي 💵
-                @elseif($booking->payment_type === 'card')
-                    بطاقة ائتمان 💳
-                @else
-                    تحويل بنكي 🏦
-                @endif
-            </strong>
-        </div>
-
-        <div class="total-section">
-            <h3>💰 إجمالي المبلغ المستحق</h3>
-            <div class="total-amount">{{ number_format($booking->price, 2) }} جنيه</div>
-        </div>
-
-        @if($booking->notes)
-        <div class="customer-section">
-            <h3>📝 ملاحظات</h3>
-            <p style="padding: 10px; line-height: 1.8;">{{ $booking->notes }}</p>
-        </div>
-        @endif
-
-        <div class="terms">
-            <h4>⚠️ الشروط والأحكام:</h4>
-            <ul>
-                <li>جميع الأسعار المذكورة شاملة الضرائب</li>
-                <li>يجب الالتزام بالموعد المحدد</li>
-                <li>في حالة الإلغاء يرجى الإخطار قبل 24 ساعة</li>
-                <li>المبلغ المدفوع غير قابل للاسترداد في حالة عدم الحضور</li>
-            </ul>
-        </div>
-
+        <!-- Footer -->
         <div class="footer">
-            <p><strong>شكراً لثقتكم بنا 🌟</strong></p>
-            <p>نتطلع لخدمتكم مرة أخرى</p>
-            <small>تم إصدار الفاتورة بتاريخ: {{ now()->format('Y-m-d H:i') }}</small>
+            <div>New Cinderella Travel</div>
+            <div>For Complaints: +201095406303 (WhatsApp)</div>
         </div>
     </div>
-
-    <script>
-        window.onload = function() {
-            window.print();
-        };
-    </script>
 </body>
 </html>
-
-
-
-
