@@ -493,122 +493,130 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // المتغيرات
-                const bookingFromInput = document.getElementById('booking_from');
-                const tripDurationInput = document.getElementById('trip_duration');
-                const bookingToInput = document.getElementById('booking_to');
+            $(document).ready(function() {
+    // ========================================
+    // 1. Initialize Select2 on all select elements
+    // ========================================
+    $('#departure_from_location_id').select2();
+    $('#departure_to_location_id').select2();
+    $('#return_from_location_id').select2();
+    $('#return_to_location_id').select2();
+    $('#car_id').select2();
+    $('#return_car_id').select2();
+    $('#driver_id').select2();
+    $('#supervisor_id').select2();
+    $('#return_driver_id').select2();
+    $('#car_type_id').select2();
 
-                // حساب وقت الانتهاء التلقائي بناءً على الوقت والمدة
-                function calculateEndTime() {
-                    if (bookingFromInput.value && tripDurationInput.value) {
-                        const startTime = new Date(bookingFromInput.value);
-                        const duration = parseInt(tripDurationInput.value);
+    // ========================================
+    // 2. Calculate end time based on start time and duration
+    // ========================================
+    const bookingFromInput = document.getElementById('booking_from');
+    const tripDurationInput = document.getElementById('trip_duration');
+    const bookingToInput = document.getElementById('booking_to');
 
-                        if (!isNaN(startTime.getTime()) && duration > 0) {
-                            startTime.setMinutes(startTime.getMinutes() + duration);
+    function calculateEndTime() {
+        if (bookingFromInput.value && tripDurationInput.value) {
+            const startTime = new Date(bookingFromInput.value);
+            const duration = parseInt(tripDurationInput.value);
 
-                            // تنسيق التاريخ لـ datetime-local (YYYY-MM-DDTHH:mm)
-                            const year = startTime.getFullYear();
-                            const month = String(startTime.getMonth() + 1).padStart(2, '0');
-                            const day = String(startTime.getDate()).padStart(2, '0');
-                            const hours = String(startTime.getHours()).padStart(2, '0');
-                            const minutes = String(startTime.getMinutes()).padStart(2, '0');
+            if (!isNaN(startTime.getTime()) && duration > 0) {
+                startTime.setMinutes(startTime.getMinutes() + duration);
 
-                            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+                // Format date for datetime-local (YYYY-MM-DDTHH:mm)
+                const year = startTime.getFullYear();
+                const month = String(startTime.getMonth() + 1).padStart(2, '0');
+                const day = String(startTime.getDate()).padStart(2, '0');
+                const hours = String(startTime.getHours()).padStart(2, '0');
+                const minutes = String(startTime.getMinutes()).padStart(2, '0');
 
-                            // اقتراح وقت البداية للعودة
-                            if (!bookingToInput.value) {
-                                bookingToInput.value = formattedDate;
-                            }
-                        }
-                    }
+                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                // Set return start time
+                if (!bookingToInput.value) {
+                    bookingToInput.value = formattedDate;
                 }
+            }
+        }
+    }
 
-                bookingFromInput.addEventListener('change', calculateEndTime);
-                tripDurationInput.addEventListener('input', calculateEndTime);
+    if (bookingFromInput) {
+        bookingFromInput.addEventListener('change', calculateEndTime);
+    }
+    if (tripDurationInput) {
+        tripDurationInput.addEventListener('input', calculateEndTime);
+    }
 
-                // نسخ السائق إلى سائق العودة تلقائياً
-                document.getElementById('driver_id').addEventListener('change', function() {
-                    const returnDriverSelect = document.getElementById('return_driver_id');
-                    if (!returnDriverSelect.value && this.value) {
-                        returnDriverSelect.value = this.value;
-                    }
-                });
-            });
+    // ========================================
+    // 3. Location Logic: Departure FROM → Return TO
+    // ========================================
+    $('#departure_from_location_id').on('change', function() {
+        const selectedValue = $(this).val();
+        if (selectedValue) {
+            console.log('Setting return TO from departure FROM:', selectedValue);
+            $('#return_to_location_id').val(selectedValue).trigger('change');
+        }
+    });
+
+    // ========================================
+    // 4. Location Logic: Departure TO → Return FROM
+    // ========================================
+    $('#departure_to_location_id').on('change', function() {
+        const selectedValue = $(this).val();
+        if (selectedValue) {
+            console.log('Setting return FROM from departure TO:', selectedValue);
+            $('#return_from_location_id').val(selectedValue).trigger('change');
+        }
+    });
+
+    // ========================================
+    // 5. Car Logic: Same car for return
+    // ========================================
+    $('#car_id').on('change', function() {
+        const selectedValue = $(this).val();
+        if (selectedValue) {
+            console.log('Setting return car:', selectedValue);
+            $('#return_car_id').val(selectedValue).trigger('change');
+        }
+    });
+
+    // ========================================
+    // 6. Driver Logic: Copy driver to return driver
+    // ========================================
+    $('#driver_id').on('change', function() {
+        const selectedValue = $(this).val();
+        const returnDriverValue = $('#return_driver_id').val();
+        
+        // Only set if return driver is empty
+        if (selectedValue && !returnDriverValue) {
+            console.log('Setting return driver:', selectedValue);
+            $('#return_driver_id').val(selectedValue).trigger('change');
+        }
+    });
+
+    // ========================================
+    // 7. Toggle Return Section based on checkbox
+    // ========================================
+    const hasReturnCheckbox = $('#has_return');
+    const returnSection = $('#return_section');
+
+    if (hasReturnCheckbox.length && returnSection.length) {
+        // Set initial state
+        if (hasReturnCheckbox.is(':checked')) {
+            returnSection.show();
+        } else {
+            returnSection.hide();
+        }
+
+        // Handle checkbox change
+        hasReturnCheckbox.on('change', function() {
+            if ($(this).is(':checked')) {
+                returnSection.slideDown();
+            } else {
+                returnSection.slideUp();
+            }
+        });
+    }
+});
         </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var hasReturnCheckbox = document.getElementById('has_return') || document.getElementById(
-                    'has_return_checkbox');
-                var returnSection = document.getElementById('return_section');
-                if (hasReturnCheckbox && returnSection) {
-                    hasReturnCheckbox.addEventListener('change', function() {
-                        if (this.checked) {
-                            returnSection.style.display = 'block';
-                        } else {
-                            returnSection.style.display = 'none';
-                        }
-                    });
-                }
-            });
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // When departure FROM changes → set return TO
-                var depFromSelect = document.getElementById('departure_from_location_id');
-                var returnToSelect = document.getElementById('return_to_location_id');
-
-                if (depFromSelect && returnToSelect) {
-                    depFromSelect.addEventListener('change', function() {
-                        if (this.value) {
-                            console.log('Setting return TO from departure FROM:', this.value);
-                            returnToSelect.value = this.value;
-                        }
-                    });
-                }
-
-                // When departure TO changes → set return FROM
-                var depToSelect = document.getElementById('departure_to_location_id');
-                var returnFromSelect = document.getElementById('return_from_location_id');
-
-                if (depToSelect && returnFromSelect) {
-                    depToSelect.addEventListener('change', function() {
-                        if (this.value) {
-                            console.log('Setting return FROM from departure TO:', this.value);
-                            returnFromSelect.value = this.value;
-                        }
-                    });
-                }
-
-                // Keep the car selection logic (same car for return)
-                var depCarSelect = document.getElementById('car_id');
-                var returnCarSelect = document.getElementById('return_car_id');
-
-                if (depCarSelect && returnCarSelect) {
-                    depCarSelect.addEventListener('change', function() {
-                        if (this.value) {
-                            returnCarSelect.value = this.value;
-                        }
-                    });
-                }
-            });
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                $('#departure_from_location_id').select2();
-                $('#departure_to_location_id').select2();
-                $('#return_from_location_id').select2();
-                $('#return_to_location_id').select2();
-                $('#car_id').select2();
-                $('#return_car_id').select2();
-                $('#driver_id').select2();
-                $('#supervisor_id').select2();
-                $('#return_car_id').select2();
-                $('#return_driver_id').select2();
-                $('#car_type_id').select2();
-
-            });
-        </script>
-
     @stop
