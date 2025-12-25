@@ -138,9 +138,20 @@ class Car extends Model
         return $this->hasMany(Booking::class);
     }
 
+    //latest booking 
+    public function latestBooking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class)->latest();
+    }
     public function carType(): BelongsTo
     {
         return $this->belongsTo(CarType::class);
+    }
+
+    //latest return booking
+    public function latestReturnBooking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class)->latest()->where('has_return', true);
     }
 
     /**

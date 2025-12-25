@@ -494,129 +494,129 @@
 
         <script>
             $(document).ready(function() {
-    // ========================================
-    // 1. Initialize Select2 on all select elements
-    // ========================================
-    $('#departure_from_location_id').select2();
-    $('#departure_to_location_id').select2();
-    $('#return_from_location_id').select2();
-    $('#return_to_location_id').select2();
-    $('#car_id').select2();
-    $('#return_car_id').select2();
-    $('#driver_id').select2();
-    $('#supervisor_id').select2();
-    $('#return_driver_id').select2();
-    $('#car_type_id').select2();
+                // ========================================
+                // 1. Initialize Select2 on all select elements
+                // ========================================
+                $('#departure_from_location_id').select2();
+                $('#departure_to_location_id').select2();
+                $('#return_from_location_id').select2();
+                $('#return_to_location_id').select2();
+                $('#car_id').select2();
+                $('#return_car_id').select2();
+                $('#driver_id').select2();
+                $('#supervisor_id').select2();
+                $('#return_driver_id').select2();
+                $('#car_type_id').select2();
 
-    // ========================================
-    // 2. Calculate end time based on start time and duration
-    // ========================================
-    const bookingFromInput = document.getElementById('booking_from');
-    const tripDurationInput = document.getElementById('trip_duration');
-    const bookingToInput = document.getElementById('booking_to');
+                // ========================================
+                // 2. Calculate end time based on start time and duration
+                // ========================================
+                const bookingFromInput = document.getElementById('booking_from');
+                const tripDurationInput = document.getElementById('trip_duration');
+                const bookingToInput = document.getElementById('booking_to');
 
-    function calculateEndTime() {
-        if (bookingFromInput.value && tripDurationInput.value) {
-            const startTime = new Date(bookingFromInput.value);
-            const duration = parseInt(tripDurationInput.value);
+                function calculateEndTime() {
+                    if (bookingFromInput.value && tripDurationInput.value) {
+                        const startTime = new Date(bookingFromInput.value);
+                        const duration = parseInt(tripDurationInput.value);
 
-            if (!isNaN(startTime.getTime()) && duration > 0) {
-                startTime.setMinutes(startTime.getMinutes() + duration);
+                        if (!isNaN(startTime.getTime()) && duration > 0) {
+                            startTime.setMinutes(startTime.getMinutes() + duration);
 
-                // Format date for datetime-local (YYYY-MM-DDTHH:mm)
-                const year = startTime.getFullYear();
-                const month = String(startTime.getMonth() + 1).padStart(2, '0');
-                const day = String(startTime.getDate()).padStart(2, '0');
-                const hours = String(startTime.getHours()).padStart(2, '0');
-                const minutes = String(startTime.getMinutes()).padStart(2, '0');
+                            // Format date for datetime-local (YYYY-MM-DDTHH:mm)
+                            const year = startTime.getFullYear();
+                            const month = String(startTime.getMonth() + 1).padStart(2, '0');
+                            const day = String(startTime.getDate()).padStart(2, '0');
+                            const hours = String(startTime.getHours()).padStart(2, '0');
+                            const minutes = String(startTime.getMinutes()).padStart(2, '0');
 
-                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+                            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
 
-                // Set return start time
-                if (!bookingToInput.value) {
-                    bookingToInput.value = formattedDate;
+                            // Set return start time
+                            if (!bookingToInput.value) {
+                                bookingToInput.value = formattedDate;
+                            }
+                        }
+                    }
                 }
-            }
-        }
-    }
 
-    if (bookingFromInput) {
-        bookingFromInput.addEventListener('change', calculateEndTime);
-    }
-    if (tripDurationInput) {
-        tripDurationInput.addEventListener('input', calculateEndTime);
-    }
+                if (bookingFromInput) {
+                    bookingFromInput.addEventListener('change', calculateEndTime);
+                }
+                if (tripDurationInput) {
+                    tripDurationInput.addEventListener('input', calculateEndTime);
+                }
 
-    // ========================================
-    // 3. Location Logic: Departure FROM → Return TO
-    // ========================================
-    $('#departure_from_location_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return TO from departure FROM:', selectedValue);
-            $('#return_to_location_id').val(selectedValue).trigger('change');
-        }
-    });
+                // ========================================
+                // 3. Location Logic: Departure FROM → Return TO
+                // ========================================
+                $('#departure_from_location_id').on('change', function() {
+                    const selectedValue = $(this).val();
+                    if (selectedValue) {
+                        console.log('Setting return TO from departure FROM:', selectedValue);
+                        $('#return_to_location_id').val(selectedValue).trigger('change');
+                    }
+                });
 
-    // ========================================
-    // 4. Location Logic: Departure TO → Return FROM
-    // ========================================
-    $('#departure_to_location_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return FROM from departure TO:', selectedValue);
-            $('#return_from_location_id').val(selectedValue).trigger('change');
-        }
-    });
+                // ========================================
+                // 4. Location Logic: Departure TO → Return FROM
+                // ========================================
+                $('#departure_to_location_id').on('change', function() {
+                    const selectedValue = $(this).val();
+                    if (selectedValue) {
+                        console.log('Setting return FROM from departure TO:', selectedValue);
+                        $('#return_from_location_id').val(selectedValue).trigger('change');
+                    }
+                });
 
-    // ========================================
-    // 5. Car Logic: Same car for return
-    // ========================================
-    $('#car_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return car:', selectedValue);
-            $('#return_car_id').val(selectedValue).trigger('change');
-        }
-    });
+                // ========================================
+                // 5. Car Logic: Same car for return
+                // ========================================
+                $('#car_id').on('change', function() {
+                    const selectedValue = $(this).val();
+                    if (selectedValue) {
+                        console.log('Setting return car:', selectedValue);
+                        $('#return_car_id').val(selectedValue).trigger('change');
+                    }
+                });
 
-    // ========================================
-    // 6. Driver Logic: Copy driver to return driver
-    // ========================================
-    $('#driver_id').on('change', function() {
-        const selectedValue = $(this).val();
-        const returnDriverValue = $('#return_driver_id').val();
-        
-        // Only set if return driver is empty
-        if (selectedValue && !returnDriverValue) {
-            console.log('Setting return driver:', selectedValue);
-            $('#return_driver_id').val(selectedValue).trigger('change');
-        }
-    });
+                // ========================================
+                // 6. Driver Logic: Copy driver to return driver
+                // ========================================
+                $('#driver_id').on('change', function() {
+                    const selectedValue = $(this).val();
+                    const returnDriverValue = $('#return_driver_id').val();
 
-    // ========================================
-    // 7. Toggle Return Section based on checkbox
-    // ========================================
-    const hasReturnCheckbox = $('#has_return');
-    const returnSection = $('#return_section');
+                    // Only set if return driver is empty
+                    if (selectedValue && !returnDriverValue) {
+                        console.log('Setting return driver:', selectedValue);
+                        $('#return_driver_id').val(selectedValue).trigger('change');
+                    }
+                });
 
-    if (hasReturnCheckbox.length && returnSection.length) {
-        // Set initial state
-        if (hasReturnCheckbox.is(':checked')) {
-            returnSection.show();
-        } else {
-            returnSection.hide();
-        }
+                // ========================================
+                // 7. Toggle Return Section based on checkbox
+                // ========================================
+                const hasReturnCheckbox = $('#has_return');
+                const returnSection = $('#return_section');
 
-        // Handle checkbox change
-        hasReturnCheckbox.on('change', function() {
-            if ($(this).is(':checked')) {
-                returnSection.slideDown();
-            } else {
-                returnSection.slideUp();
-            }
-        });
-    }
-});
+                if (hasReturnCheckbox.length && returnSection.length) {
+                    // Set initial state
+                    if (hasReturnCheckbox.is(':checked')) {
+                        returnSection.show();
+                    } else {
+                        returnSection.hide();
+                    }
+
+                    // Handle checkbox change
+                    hasReturnCheckbox.on('change', function() {
+                        if ($(this).is(':checked')) {
+                            returnSection.slideDown();
+                        } else {
+                            returnSection.slideUp();
+                        }
+                    });
+                }
+            });
         </script>
     @stop
