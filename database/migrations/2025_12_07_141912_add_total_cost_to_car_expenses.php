@@ -11,7 +11,7 @@ return new class extends Migration
     {
         // 1. أولاً: أضف العمود الجديد
         Schema::table('car_expenses', function (Blueprint $table) {
-            if (!Schema::hasColumn('car_expenses', 'total_cost')) {
+            if (! Schema::hasColumn('car_expenses', 'total_cost')) {
                 $table->decimal('total_cost', 12, 2)->default(0)->after('description');
             }
         });

@@ -14,7 +14,7 @@ class SettingUpdateRequest extends FormRequest
     public function rules(): array
     {
         $setting = $this->route('setting');
-        
+
         return [
             'enable_check_the_car_available' => 'required|in:0,1',
         ];

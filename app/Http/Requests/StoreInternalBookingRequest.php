@@ -31,7 +31,7 @@ class StoreInternalBookingRequest extends FormRequest
                     $bookingFrom = $this->input('booking_from');
                     $bookingTo = $this->input('booking_to');
 
-                    if (!$bookingFrom || !$bookingTo) {
+                    if (! $bookingFrom || ! $bookingTo) {
                         return;
                     }
 
@@ -39,11 +39,11 @@ class StoreInternalBookingRequest extends FormRequest
                         // Check for overlapping bookings for the departure car
                         $overlappingBooking = Booking::where('car_id', $value)
                             ->where(function ($query) use ($bookingFrom, $bookingTo) {
-                                $query->where(function ($q) use ($bookingFrom, $bookingTo) {
+                                $query->where(function ($q) use ($bookingFrom) {
                                     // New booking starts during or at the same time as an existing booking
                                     $q->where('booking_from', '<=', $bookingFrom)
                                         ->where('booking_to', '>', $bookingFrom);
-                                })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
+                                })->orWhere(function ($q) use ($bookingTo) {
                                     // New booking ends during an existing booking
                                     $q->where('booking_from', '<', $bookingTo)
                                         ->where('booking_to', '>=', $bookingTo);
@@ -59,7 +59,7 @@ class StoreInternalBookingRequest extends FormRequest
                             $fail('السيارة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
                         }
                     }
-                }
+                },
             ],
             'car_type_id' => 'required|exists:car_types,id',
             'room_name' => 'required|string|max:255',

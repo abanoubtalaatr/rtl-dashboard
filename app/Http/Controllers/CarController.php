@@ -24,8 +24,8 @@ class CarController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('plate_number', 'like', "%{$search}%")
-                  ->orWhere('model', 'like', "%{$search}%")
-                  ->orWhere('color', 'like', "%{$search}%");
+                    ->orWhere('model', 'like', "%{$search}%")
+                    ->orWhere('color', 'like', "%{$search}%");
             });
         }
 
@@ -39,7 +39,7 @@ class CarController extends Controller
         return view('cars.index', compact('cars'));
     }
 
-      /**
+    /**
      * Update car status
      */
     public function updateStatus(Request $request, Car $car)

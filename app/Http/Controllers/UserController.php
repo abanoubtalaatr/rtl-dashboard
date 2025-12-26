@@ -19,12 +19,11 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $query = User::query()
-        ->whereNotIn('email', [
-            'nagy@admin.com',
-            'abanoub@admin.com',
-            'amr@admin.com',
-        ]);
-    
+            ->whereNotIn('email', [
+                'nagy@admin.com',
+                'abanoub@admin.com',
+                'amr@admin.com',
+            ]);
 
         // Search functionality
         if ($request->filled('search')) {

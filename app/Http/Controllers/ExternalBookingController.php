@@ -18,9 +18,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ExternalBookingController extends Controller
 {
-    /**
-     * Display a listing of external bookings.
-     */
     public function index(Request $request)
     {
         $query = Booking::with([
@@ -34,38 +31,93 @@ class ExternalBookingController extends Controller
             'creator',
         ])->external();
 
-        // إذا لم يتم تحديد from_date أو to_date، فعرض حجوزات اليوم الحالي فقط بشكل افتراضي
+        // Default: today only
         $fromDate = $request->filled('from_date') ? $request->from_date : now()->toDateString();
         $toDate = $request->filled('to_date') ? $request->to_date : now()->toDateString();
 
         $query->whereDate('booking_from', '>=', $fromDate)
             ->whereDate('booking_to', '<=', $toDate);
 
-        // إذا كان المستخدم ليس super admin، يشوف حجوزاته فقط
+        // Permissions
         if (! Auth::user()->isSuperAdmin()) {
             $query->where('created_by', Auth::id());
         }
-
         if ($request->filled('user_id')) {
             $query->where('created_by', $request->user_id);
         }
-        // Search functionality
+
+        // Search by customer or driver name
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('customer', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                    ->orWhereHas('driver', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
+                $q->whereHas('customer', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('driver', fn ($q) => $q->where('name', 'like', "%{$search}%"));
             });
         }
 
-        $bookings = $query->latest()->paginate(15);
+        // ==================== COMBINED PAYMENT + CURRENCY STATS ====================
+        $statsQuery = clone $query;
+
+        $paymentCurrencyRaw = $statsQuery
+            ->select(
+                'payment_type',
+                'currency_id',
+                \DB::raw('COUNT(*) as count'),
+                \DB::raw('SUM(booking_price) as total_price')
+            )
+            ->groupBy('payment_type', 'currency_id')
+            ->with('currency')
+            ->get();
+
+        $currencies = Currency::pluck('name', 'id');
+
+        $paymentLabels = Booking::getPaymentTypeOptions();
+
+        $paymentCurrencyStats = collect($paymentLabels)->map(function ($label, $key) use ($paymentCurrencyRaw, $currencies) {
+            $items = $paymentCurrencyRaw->where('payment_type', $key);
+
+            $currenciesData = $items->map(function ($item) use ($currencies) {
+                return [
+                    'name' => $currencies->get($item->currency_id, 'غير معروف'),
+                    'count' => $item->count,
+                    'total_price' => $item->total_price ?? 0,
+                ];
+            })->sortByDesc('total_price')->values();
+
+            $colorMap = [
+                'cash' => 'success',
+                'visa' => 'primary',
+                'credit' => 'warning',
+                'rooms' => 'info',
+                'free' => 'secondary',
+            ];
+
+            $color = $colorMap[$key] ?? 'secondary';
+
+            return [
+                'key' => $key,
+                'label' => $label,
+                'items' => $currenciesData,
+                'total_count' => $items->sum('count'),
+                'color' => $color,
+            ];
+        })->filter(fn ($stat) => $stat['total_count'] > 0)->values();
+
+        // ==================== OVERALL TOTALS ====================
+        $overallCount = $query->count();
+        $overallTotal = $query->sum('booking_price');
+
+        // Paginated bookings
+        $bookings = $query->latest()->paginate(50);
         $users = User::get();
 
-        return view('external-bookings.index', compact('bookings', 'users'));
+        return view('external-bookings.index', compact(
+            'bookings',
+            'users',
+            'paymentCurrencyStats',
+            'overallCount',
+            'overallTotal'
+        ));
     }
 
     /**
@@ -82,8 +134,9 @@ class ExternalBookingController extends Controller
         $paymentTypes = Booking::getPaymentTypeOptions();
         $locations = Location::all();
         $supervisors = Supervisor::all();
+        $lastBooking = Booking::where('created_by', Auth::id())->external()->latest()->first();
 
-        return view('external-bookings.create', compact('drivers', 'cars', 'carTypes', 'currencies', 'customers', 'companies', 'paymentTypes', 'locations', 'supervisors'));
+        return view('external-bookings.create', compact('drivers', 'cars', 'carTypes', 'currencies', 'customers', 'companies', 'paymentTypes', 'locations', 'supervisors', 'lastBooking'));
     }
 
     /**
@@ -91,15 +144,16 @@ class ExternalBookingController extends Controller
      */
     public function store(StoreExternalBookingRequest $request)
     {
+
         $data = $request->validated();
         $data['type'] = 'external';
         $data['created_by'] = Auth::id();
-        if($request->has_return =='on') {
+        if ($request->has_return == 'on') {
             $data['has_return'] = true;
         } else {
             $data['has_return'] = false;
         }
-        if($request->on_phone =='on') {
+        if ($request->on_phone == 'on') {
             $data['on_phone'] = true;
         } else {
             $data['on_phone'] = false;

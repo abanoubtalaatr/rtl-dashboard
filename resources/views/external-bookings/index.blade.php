@@ -11,7 +11,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent m-0 p-0">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
-                <li class="breadcrumb-item active">الحجوزات الخارجية </li>
+                <li class="breadcrumb-item active">الحجوزات الخارجية</li>
             </ol>
         </nav>
     </div>
@@ -27,21 +27,16 @@
                             <h3 class="card-title">قائمة الحجوزات الخارجية</h3>
                         </div>
                         @php
-                        // Base query
-                        $query = \App\Models\Booking::external()->unreturned();
-
-                        // If NOT super admin → filter by created_by
-                        if (!Auth::user()->isSuperAdmin()) {
-                            $query->where('created_by', Auth::id());
-                        }
-
-                        // Get the final count
-                        $count = $query->count();
-                    @endphp
+                            $query = \App\Models\Booking::external()->unreturned();
+                            if (!Auth::user()->isSuperAdmin()) {
+                                $query->where('created_by', Auth::id());
+                            }
+                            $count = $query->count();
+                        @endphp
                         <div class="col-md-6 text-right">
                             <a href="{{ route('external-bookings.unreturned') }}" class="btn btn-warning mr-2">
                                 <i class="fas fa-hourglass-half"></i> الحجوزات الغير مُرجعة
-                                <span class="badge badge-danger fa-3x">{{ $count }}</span>
+                                <span class="badge badge-danger">{{ $count }}</span>
                             </a>
                             <a href="{{ route('external-bookings.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> إضافة حجز خارجي جديد
@@ -49,93 +44,78 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <!-- Search Form -->
-                    <form method="GET" action="{{ route('external-bookings.index') }}" class="mb-3">
-                        <div class="row">
-                            <div class="col-md-2">
+                    <form method="GET" action="{{ route('external-bookings.index') }}" class="mb-4">
+                        <div class="row align-items-end">
+                            <div class="col-md-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <button class="btn btn-default" type="submit">
-                                            <i class="fas fa-search"></i>
-                                        </button>
+                                        <button class="btn btn-default" type="submit"><i class="fas fa-search"></i></button>
                                     </div>
-                                    <input type="text" name="search" class="form-control"
-                                        placeholder="البحث باسم العميل أو السائق" value="{{ request('search') }}">
+                                    <input type="text" name="search" class="form-control" placeholder="البحث باسم العميل أو السائق"
+                                           value="{{ request('search') }}">
                                 </div>
                             </div>
-                            <div class="col-md-2 mb-2">
-                                <input type="date" name="from_date" class="form-control" placeholder="من تاريخ"
-                                    onchange="this.form.submit()" value="{{ request('from_date') }}">
+                            <div class="col-md-2">
+                                <input type="date" name="from_date" class="form-control" onchange="this.form.submit()"
+                                       value="{{ request('from_date') }}">
                             </div>
-                            <div class="col-md-2 mb-2">
-                                <input type="date" name="to_date" class="form-control" placeholder="إلى تاريخ"
-                                    onchange="this.form.submit()" value="{{ request('to_date') }}">
+                            <div class="col-md-2">
+                                <input type="date" name="to_date" class="form-control" onchange="this.form.submit()"
+                                       value="{{ request('to_date') }}">
                             </div>
-
                             @if (Auth::user()->isSuperAdmin())
                                 <div class="col-md-3">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        </div>
-                                        <select name="user_id" class="form-control" style="padding: 0.375rem 0.75rem;"
-                                            onchange="this.form.submit()">
-                                            <option value="">كل المستخدمين</option>
-                                            @foreach ($users as $user)
-                                                <option value="{{ $user->id }}"
-                                                    {{ request('user_id') == $user->id ? 'selected' : '' }}>
-                                                    {{ $user->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                    <select name="user_id" class="form-control" onchange="this.form.submit()">
+                                        <option value="">كل المستخدمين</option>
+                                        @foreach ($users as $user)
+                                            <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             @endif
-                            <div class="col-md-2 d-flex align-items-center">
-                                <a href="{{ route('external-bookings.index') }}" class="btn btn-secondary ml-2">
-                                    <i class="fas fa-redo"></i> إعادة ضبط البحث
+                            <div class="col-md-2">
+                                <a href="{{ route('external-bookings.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> إعادة ضبط
                                 </a>
                             </div>
                         </div>
                     </form>
 
+                    <!-- Alerts -->
                     @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                            <i class="fas fa-check-circle mr-2"></i>
-                            {{ session('success') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
                         </div>
                     @endif
-
                     @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
                         </div>
                     @endif
 
+                    <!-- Table -->
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th style="width: 80px;">#</th>
+                                    <th>#</th>
                                     <th>العميل</th>
                                     <th>السائق</th>
                                     <th>نوع السيارة</th>
                                     <th>التشغيلة</th>
                                     <th>من تاريخ</th>
-
                                     <th>السعر</th>
                                     <th>نوع الدفع</th>
                                     <th>على الهاتف</th>
-                                    <th style="width: 120px;" class="text-center">حالة الإرجاع</th>
-                                    <th style="width: 200px;" class="text-center">الإجراءات</th>
+                                    <th class="text-center">حالة الإرجاع</th>
+                                    <th class="text-center">الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,31 +124,19 @@
                                         <td><strong>{{ $booking->id }}</strong></td>
                                         <td>
                                             <i class="fas fa-user text-info mr-2"></i>
-                                            <strong>{{ $booking->customer->name ?? '-' }}</strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-users mr-1"></i>
-                                                {{ $booking->number_of_people }} فرد
-                                            </small>
+                                            <strong>{{ $booking->customer->name ?? '-' }}</strong><br>
+                                            <small class="text-muted"><i class="fas fa-users mr-1"></i>{{ $booking->number_of_people }} فرد</small>
                                         </td>
                                         <td>
                                             <i class="fas fa-user-tie text-primary mr-2"></i>
                                             {{ $booking->driver->name ?? '-' }}
                                             @if ($booking->return_driver_id && $booking->return_driver_id != $booking->driver_id)
-                                                <br>
-                                                <small class="text-muted">
-                                                    العودة: {{ $booking->returnDriver->name }}
-                                                </small>
+                                                <br><small class="text-muted">عودة: {{ $booking->returnDriver->name }}</small>
                                             @endif
                                         </td>
-                                        <td>
-                                            <span class="badge badge-info">
-                                                {{ $booking->carType->name ?? '-' }}
-                                            </span>
-                                        </td>
+                                        <td><span class="badge badge-info">{{ $booking->carType->name ?? '-' }}</span></td>
                                         <td>
                                             <small>
-                                                <i class="fas fa-map-marker-alt text-success mr-1"></i>
                                                 {{ $booking->departureFromLocation->name ?? '-' }}
                                                 <i class="fas fa-arrow-left mx-1"></i>
                                                 {{ $booking->departureToLocation->name ?? '-' }}
@@ -177,11 +145,20 @@
                                         <td>{{ $booking->booking_from->format('Y-m-d H:i') }}</td>
                                         <td>
                                             <strong>{{ number_format($booking->booking_price, 2) }}</strong>
-                                            <small>{{ $booking->currency->symbol ?? '' }}</small>
+                                            <small>{{ $booking->currency->name ?? '' }}</small>
                                         </td>
                                         <td>
-                                            <span
-                                                class="badge badge-{{ $booking->payment_type === 'cash' ? 'success' : ($booking->payment_type === 'visa' ? 'primary' : 'warning') }}">
+                                            @php
+                                                $paymentColors = [
+                                                    'cash'   => 'success',
+                                                    'visa'   => 'primary',
+                                                    'credit' => 'warning',
+                                                    'rooms'  => 'info',
+                                                    'free'   => 'secondary',
+                                                ];
+                                                $badgeColor = $paymentColors[$booking->payment_type] ?? 'secondary';
+                                            @endphp
+                                            <span class="badge badge-{{ $badgeColor }}">
                                                 {{ $booking->payment_type_label }}
                                             </span>
                                         </td>
@@ -192,40 +169,26 @@
                                         </td>
                                         <td class="text-center">
                                             @if($booking->has_return)
-                                            <form action="{{ route('external-bookings.toggle-return', $booking) }}"
-                                                method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="submit"
-                                                    class="btn btn-sm {{ $booking->returned ? 'btn-success' : 'btn-secondary' }}"
-                                                    title="{{ $booking->returned ? 'تم الإرجاع' : 'لم يتم الإرجاع' }}">
-                                                    <i
-                                                        class="fas {{ $booking->returned ? 'fa-check-circle' : 'fa-clock' }}"></i>
-                                                    {{ $booking->returned ? 'مُرجع' : 'لم يُرجع' }}
-                                                </button>
-                                            </form>
+                                                <form action="{{ route('external-bookings.toggle-return', $booking) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm {{ $booking->returned ? 'btn-success' : 'btn-secondary' }}"
+                                                            title="{{ $booking->returned ? 'تم الإرجاع' : 'لم يتم الإرجاع' }}">
+                                                        <i class="fas {{ $booking->returned ? 'fa-check-circle' : 'fa-clock' }}"></i>
+                                                        {{ $booking->returned ? 'مُرجع' : 'لم يُرجع' }}
+                                                    </button>
+                                                </form>
                                             @endif
                                             @if ($booking->returned && $booking->returned_at)
-                                                <br>
-                                                <small class="text-muted">
-                                                    {{ $booking->returned_at->diffForHumans() }}
-                                                </small>
+                                                <br><small class="text-muted">{{ $booking->returned_at->diffForHumans() }}</small>
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('external-bookings.show', $booking) }}"
-                                                    class="btn btn-info btn-sm" title="عرض">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-
-                                                <a href="{{ route('external-bookings.edit', $booking) }}"
-                                                    class="btn btn-warning btn-sm" title="تعديل">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-
+                                            <div class="btn-group">
+                                                <a href="{{ route('external-bookings.show', $booking) }}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                                                <a href="{{ route('external-bookings.edit', $booking) }}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                                 <button type="button" class="btn btn-danger btn-sm delete-booking"
-                                                    data-id="{{ $booking->id }}"
-                                                    data-name="{{ $booking->customer->name ?? 'الحجز' }}" title="حذف">
+                                                        data-id="{{ $booking->id }}"
+                                                        data-name="{{ $booking->customer->name ?? 'الحجز' }}">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
@@ -233,9 +196,9 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="11" class="text-center py-5">
-                                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                                            <p class="text-muted">لا توجد حجوزات خارجية</p>
+                                        <td colspan="11" class="text-center py-5 text-muted">
+                                            <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                            <p>لا توجد حجوزات خارجية</p>
                                         </td>
                                     </tr>
                                 @endforelse
@@ -244,8 +207,81 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center mt-4">
                         {{ $bookings->links() }}
+                    </div>
+
+                    <!-- Combined Payment + Currency Statistics -->
+                    <div class="mt-5">
+                        <h5 class="mb-4 text-center text-primary">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            إحصائيات طرق الدفع مقسمة حسب العملة
+                        </h5>
+
+                        @if($paymentCurrencyStats->isEmpty())
+                            <p class="text-center text-muted">لا توجد حجوزات في الفترة المحددة</p>
+                        @else
+                            <div class="row justify-content-center">
+                                @foreach($paymentCurrencyStats as $payment)
+                                    @php
+                                        $colorMap = [
+                                            'cash'   => 'success',
+                                            'visa'   => 'primary',
+                                            'credit' => 'warning',
+                                            'rooms'  => 'info',
+                                            'free'   => 'secondary',
+                                        ];
+                                        $borderColor = $colorMap[$payment['key']] ?? 'secondary';
+                                        $textColor   = $borderColor;
+                                    @endphp
+
+                                    <div class="col-lg-4 col-md-6 mb-4">
+                                        <div class="card shadow-sm border-left-{{ $borderColor }} h-100">
+                                            <div class="card-header bg-transparent border-0 text-center py-4">
+                                                <h5 class="mb-2 font-weight-bold text-{{ $textColor }}">
+                                                    {{ $payment['label'] }}
+                                                </h5>
+                                                <p class="mb-0 text-muted">
+                                                    <strong>إجمالي الحجوزات:</strong>
+                                                    {{ $payment['total_count'] }}
+                                                    {{ $payment['total_count'] == 1 ? 'حجز' : 'حجوزات' }}
+                                                </p>
+                                            </div>
+
+                                            <div class="card-body pt-0">
+                                                @if($payment['items']->isEmpty())
+                                                    <p class="text-center text-muted py-4">لا توجد بيانات</p>
+                                                @else
+                                                    <div class="d-flex flex-wrap justify-content-center gap-4">
+                                                        @foreach($payment['items'] as $currency)
+                                                            @php
+                                                                $word = $currency['count'] == 1 ? 'حجز' : 'حجوزات';
+                                                                $countText = $currency['count'] == 0 ? 'لا حجوزات' : $currency['count'] . ' ' . $word;
+                                                            @endphp
+
+                                                            <div class="text-center p-4 bg-light rounded shadow-sm" style="min-width: 160px; flex: 1;">
+                                                                <h6 class="mb-2 font-weight-bold text-{{ $textColor }}">
+                                                                    {{ $countText }}
+                                                                </h6>
+                                                                <p class="mb-3 text-muted small">
+                                                                    <strong>{{ $currency['name'] }}</strong>
+                                                                </p>
+                                                                <hr class="my-3">
+                                                                <p class="mb-0 h5 font-weight-bold text-{{ $textColor }}">
+                                                                    {{ number_format($currency['total_price'], 2) }}
+                                                                </p>
+                                                                <small class="text-muted d-block">{{ $currency['name'] }}</small>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -265,29 +301,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.delete-booking').forEach(button => {
                 button.addEventListener('click', function() {
-                    const bookingId = this.getAttribute('data-id');
-                    const bookingName = this.getAttribute('data-name');
+                    const id = this.dataset.id;
+                    const name = this.dataset.name;
 
                     Swal.fire({
                         title: 'هل أنت متأكد؟',
-                        text: `هل تريد حذف حجز العميل "${bookingName}"؟`,
+                        text: `هل تريد حذف حجز العميل "${name}"؟`,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#f5576c',
                         cancelButtonColor: '#667eea',
-                        confirmButtonText: '<i class="fas fa-trash mr-1"></i> نعم، احذف',
-                        cancelButtonText: '<i class="fas fa-times mr-1"></i> إلغاء',
-                        reverseButtons: true,
-                        buttonsStyling: false,
-                        customClass: {
-                            confirmButton: 'btn btn-danger mx-2',
-                            cancelButton: 'btn btn-secondary mx-2'
-                        }
-                    }).then((result) => {
+                        confirmButtonText: 'نعم، احذف',
+                        cancelButtonText: 'إلغاء',
+                        reverseButtons: true
+                    }).then(result => {
                         if (result.isConfirmed) {
-                            const form = document.getElementById('delete-form');
-                            form.action = `/external-bookings/${bookingId}`;
-                            form.submit();
+                            document.getElementById('delete-form').action = `/external-bookings/${id}`;
+                            document.getElementById('delete-form').submit();
                         }
                     });
                 });

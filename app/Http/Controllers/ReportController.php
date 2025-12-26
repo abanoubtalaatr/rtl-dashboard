@@ -10,6 +10,7 @@ use App\Models\Income;
 use App\Models\Booking;
 use App\Models\Company;
 use App\Models\Expense;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Location;
 use Illuminate\View\View;
@@ -22,59 +23,76 @@ class ReportController extends Controller
 {
     public function usersBookings(Request $request)
     {
+        // Get all currencies for mapping
+        $currencies = Currency::pluck('name', 'id');
+
         $users = User::query()
             ->select('id', 'name')
             ->withCount([
                 'createdBookings as total_bookings',
-                'createdBookings as cash_bookings' => fn ($q) => $q->where('payment_type', 'cash'),
-                'createdBookings as visa_bookings' => fn ($q) => $q->where('payment_type', 'visa'),
-                'createdBookings as credit_bookings' => fn ($q) => $q->where('payment_type', 'credit'),
-                'createdBookings as rooms_bookings' => fn ($q) => $q->where('payment_type', 'rooms'),
-                'createdBookings as free_bookings' => fn ($q) => $q->where('payment_type', 'free'),
+                'createdBookings as cash_bookings' => fn($q) => $q->where('payment_type', 'cash'),
+                'createdBookings as visa_bookings' => fn($q) => $q->where('payment_type', 'visa'),
+                'createdBookings as credit_bookings' => fn($q) => $q->where('payment_type', 'credit'),
+                'createdBookings as rooms_bookings' => fn($q) => $q->where('payment_type', 'rooms'),
+                'createdBookings as free_bookings' => fn($q) => $q->where('payment_type', 'free'),
             ])
-            ->withSum(
-                ['createdBookings as total_amount' => fn ($q) => $q->select(DB::raw('COALESCE(SUM(booking_price), 0)'))],
-                'booking_price'
-            )
-            ->withSum(
-                ['createdBookings as cash_amount' => fn ($q) => $q->where('payment_type', 'cash')],
-                'booking_price'
-            )
-            ->withSum(
-                ['createdBookings as visa_amount' => fn ($q) => $q->where('payment_type', 'visa')],
-                'booking_price'
-            )
-            ->withSum(
-                ['createdBookings as credit_amount' => fn ($q) => $q->where('payment_type', 'credit')],
-                'booking_price'
-            )
-            ->withSum(
-                ['createdBookings as rooms_amount' => fn ($q) => $q->where('payment_type', 'rooms')],
-                'booking_price'
-            )
-            ->withSum(
-                ['createdBookings as free_amount' => fn ($q) => $q->where('payment_type', 'free')],
-                'booking_price'
-            )
+            ->withSum(['createdBookings as total_amount'], 'booking_price')
+            ->withSum(['createdBookings as cash_amount' => fn($q) => $q->where('payment_type', 'cash')], 'booking_price')
+            ->withSum(['createdBookings as visa_amount' => fn($q) => $q->where('payment_type', 'visa')], 'booking_price')
+            ->withSum(['createdBookings as credit_amount' => fn($q) => $q->where('payment_type', 'credit')], 'booking_price')
+            ->withSum(['createdBookings as rooms_amount' => fn($q) => $q->where('payment_type', 'rooms')], 'booking_price')
+            ->withSum(['createdBookings as free_amount' => fn($q) => $q->where('payment_type', 'free')], 'booking_price')
             ->get();
 
-        // Totals للصف الأخير
+        // Add currency breakdown to each user
+        foreach ($users as $user) {
+            $currencyStats = Booking::where('created_by', $user->id)
+                ->select('currency_id')
+                ->selectRaw('COUNT(*) as count')
+                ->selectRaw('SUM(booking_price) as total')
+                ->groupBy('currency_id')
+                ->get();
+
+            $user->currency_breakdown = $currencyStats->mapWithKeys(function ($item) use ($currencies) {
+                $name = $currencies->get($item->currency_id, 'غير معروف');
+                return [$item->currency_id => [
+                    'name'  => $name,
+                    'count' => $item->count,
+                    'total' => $item->total ?? 0,
+                ]];
+            });
+        }
+
+        // Grand totals (payment types)
         $grandTotal = [
-            'bookings' => $users->sum('total_bookings'),
-            'cash' => $users->sum('cash_bookings'),
-            'visa' => $users->sum('visa_bookings'),
-            'credit' => $users->sum('credit_bookings'),
-            'rooms' => $users->sum('rooms_bookings'),
-            'free' => $users->sum('free_bookings'),
-            'total_amount' => $users->sum('total_amount'),
-            'cash_amount' => $users->sum('cash_amount'),
-            'visa_amount' => $users->sum('visa_amount'),
+            'cash'          => $users->sum('cash_bookings'),
+            'visa'          => $users->sum('visa_bookings'),
+            'credit'        => $users->sum('credit_bookings'),
+            'rooms'         => $users->sum('rooms_bookings'),
+            'free'          => $users->sum('free_bookings'),
+            'cash_amount'   => $users->sum('cash_amount'),
+            'visa_amount'   => $users->sum('visa_amount'),
             'credit_amount' => $users->sum('credit_amount'),
-            'rooms_amount' => $users->sum('rooms_amount'),
-            'free_amount' => $users->sum('free_amount'),
+            'rooms_amount'  => $users->sum('rooms_amount'),
+            'free_amount'   => $users->sum('free_amount'),
+            'total_amount'  => $users->sum('total_amount'),
         ];
 
-        return view('reports.users-bookings', compact('users', 'grandTotal'));
+        // Grand total by currency
+        $grandCurrency = Booking::select('currency_id')
+            ->selectRaw('COUNT(*) as count')
+            ->selectRaw('SUM(booking_price) as total')
+            ->groupBy('currency_id')
+            ->get()
+            ->mapWithKeys(fn($item) => [
+                $item->currency_id => [
+                    'name'  => $currencies->get($item->currency_id, 'غير معروف'),
+                    'count' => $item->count,
+                    'total' => $item->total ?? 0,
+                ]
+            ]);
+
+        return view('reports.users-bookings', compact('users', 'grandTotal', 'grandCurrency', 'currencies'));
     }
 
     /**
@@ -111,7 +129,7 @@ class ReportController extends Controller
         // Search by driver name
         if ($request->filled('search_driver')) {
             $query->whereHas('driver', function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->search_driver.'%');
+                $q->where('name', 'like', '%' . $request->search_driver . '%');
             });
         }
         if ($request->filled('user_id')) {
@@ -122,9 +140,9 @@ class ReportController extends Controller
         if ($request->filled('search_room')) {
             $query->where(function ($q) use ($request) {
                 $q->whereHas('fromLocation', function ($q) use ($request) {
-                    $q->where('name', 'like', '%'.$request->search_room.'%');
+                    $q->where('name', 'like', '%' . $request->search_room . '%');
                 })->orWhereHas('toLocation', function ($q) use ($request) {
-                    $q->where('name', 'like', '%'.$request->search_room.'%');
+                    $q->where('name', 'like', '%' . $request->search_room . '%');
                 });
             });
         }
@@ -181,14 +199,14 @@ class ReportController extends Controller
         // Search by driver name
         if ($request->filled('search_driver')) {
             $query->whereHas('driver', function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->search_driver.'%');
+                $q->where('name', 'like', '%' . $request->search_driver . '%');
             });
         }
 
         // Search by company name
         if ($request->filled('search_company')) {
             $query->whereHas('company', function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->search_company.'%');
+                $q->where('name', 'like', '%' . $request->search_company . '%');
             });
         }
 
@@ -337,13 +355,12 @@ class ReportController extends Controller
         ));
     }
 
-
     public function incomeExpenseReport(Request $request)
     {
-        
+
         $request->validate([
             'from_date' => 'nullable|date',
-            'to_date'   => 'nullable|date|after_or_equal:from_date',
+            'to_date' => 'nullable|date|after_or_equal:from_date',
         ]);
 
         // If no from_date/to_date in request, default to current month's start and end
@@ -376,7 +393,6 @@ class ReportController extends Controller
 
         // === NET PROFIT ===
         $netProfit = $totalIncome - $totalExpenses;
-        
 
         return view('reports.income-expense', compact(
             'from',

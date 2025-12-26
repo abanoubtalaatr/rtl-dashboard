@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
@@ -16,16 +16,16 @@ class Setting extends Model
             get: function ($value) {
                 return match ($this->type) {
                     'boolean' => (bool) $value,
-                    'number'  => is_numeric($value) ? $value + 0 : $value,
-                    'json'    => $value ? json_decode($value, true) : null,
-                    default   => $value,
+                    'number' => is_numeric($value) ? $value + 0 : $value,
+                    'json' => $value ? json_decode($value, true) : null,
+                    default => $value,
                 };
             },
             set: function ($value) {
                 return match ($this->type) {
                     'boolean' => $value ? '1' : '0',
-                    'json'    => is_array($value) ? json_encode($value) : $value,
-                    default   => $value,
+                    'json' => is_array($value) ? json_encode($value) : $value,
+                    default => $value,
                 };
             }
         );
@@ -35,6 +35,7 @@ class Setting extends Model
     public static function get(string $key, $default = null)
     {
         $setting = static::where('key', $key)->first();
+
         return $setting?->value ?? $default;
     }
 

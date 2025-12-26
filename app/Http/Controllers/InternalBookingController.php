@@ -31,14 +31,14 @@ class InternalBookingController extends Controller
             'creator',
         ])->internal();
 
-        // إذا لم يتم تحديد from_date أو to_date، فعرض حجوزات اليوم الحالي فقط بشكل افتراضي
+        // Default: today only
         $fromDate = $request->filled('from_date') ? $request->from_date : now()->toDateString();
         $toDate = $request->filled('to_date') ? $request->to_date : now()->toDateString();
 
         $query->whereDate('booking_from', '>=', $fromDate)
             ->whereDate('booking_to', '<=', $toDate);
 
-        // إذا كان المستخدم ليس super admin، يشوف حجوزاته فقط
+        // Permissions
         if (! Auth::user()->isSuperAdmin()) {
             $query->where('created_by', Auth::id());
         }
@@ -46,21 +46,78 @@ class InternalBookingController extends Controller
             $query->where('created_by', $request->user_id);
         }
 
-        // Search functionality
+        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('room_name', 'like', "%{$search}%")
-                    ->orWhereHas('driver', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
+                    ->orWhereHas('driver', fn ($q) => $q->where('name', 'like', "%{$search}%"));
             });
         }
 
-        $bookings = $query->latest()->paginate(15);
+        // ==================== COMBINED PAYMENT + CURRENCY STATS ====================
+        $statsQuery = clone $query;
+
+        $paymentCurrencyRaw = $statsQuery
+            ->select(
+                'payment_type',
+                'currency_id',
+                \DB::raw('COUNT(*) as count'),
+                \DB::raw('SUM(booking_price) as total_price')
+            )
+            ->groupBy('payment_type', 'currency_id')
+            ->with('currency')
+            ->get();
+
+        $currencies = Currency::pluck('name', 'id');
+
+        $paymentLabels = Booking::getPaymentTypeOptions();
+        $paymentCurrencyStats = collect($paymentLabels)->map(function ($label, $key) use ($paymentCurrencyRaw, $currencies) {
+            $items = $paymentCurrencyRaw->where('payment_type', $key);
+
+            $currenciesData = $items->map(function ($item) use ($currencies) {
+                return [
+                    'name' => $currencies->get($item->currency_id, 'غير معروف'),
+                    'count' => $item->count,
+                    'total_price' => $item->total_price ?? 0,
+                ];
+            })->sortByDesc('total_price')->values();
+
+            // Clean & extendable color mapping
+            $colorMap = [
+                'cash' => 'success',
+                'visa' => 'primary',
+                'credit' => 'warning',
+                'rooms' => 'info',
+                'free' => 'secondary',   // Add more easily here
+                // 'another_type' => 'danger',
+            ];
+
+            $color = $colorMap[$key] ?? 'secondary'; // Default fallback
+
+            return [
+                'key' => $key,
+                'label' => $label,
+                'items' => $currenciesData,
+                'total_count' => $items->sum('count'),
+                'color' => $color,
+            ];
+        })->filter(fn ($stat) => $stat['total_count'] > 0)->values();
+        // ==================== OVERALL TOTALS ====================
+        $overallCount = $query->count();
+        $overallTotal = $query->sum('booking_price'); // EGP only if that's your base
+
+        // Paginated bookings
+        $bookings = $query->latest()->paginate(50);
         $users = User::get();
 
-        return view('internal-bookings.index', compact('bookings', 'users'));
+        return view('internal-bookings.index', compact(
+            'bookings',
+            'users',
+            'paymentCurrencyStats',
+            'overallCount',
+            'overallTotal'
+        ));
     }
 
     /**
@@ -76,7 +133,9 @@ class InternalBookingController extends Controller
         $companies = \App\Models\Company::all();
         $paymentTypes = Booking::getPaymentTypeOptions();
         $supervisors = Supervisor::all();
+        $lastBooking = Booking::where('created_by', Auth::id())->internal()->latest()->first();
 
+        // dd($lastBooking);
         return view('internal-bookings.create', compact(
             'drivers',
             'cars',
@@ -85,7 +144,8 @@ class InternalBookingController extends Controller
             'locations',
             'companies',
             'paymentTypes',
-            'supervisors'
+            'supervisors',
+            'lastBooking'
         ));
     }
 
@@ -94,17 +154,17 @@ class InternalBookingController extends Controller
      */
     public function store(StoreInternalBookingRequest $request)
     {
-        
+
         $data = $request->validated();
-        
+
         $data['type'] = 'internal';
         $data['created_by'] = Auth::id();
-        if($request->has_return =='on') {
+        if ($request->has_return == 'on') {
             $data['has_return'] = true;
         } else {
             $data['has_return'] = false;
         }
-        if($request->on_phone =='on') {
+        if ($request->on_phone == 'on') {
             $data['on_phone'] = true;
         } else {
             $data['on_phone'] = false;
@@ -176,7 +236,7 @@ class InternalBookingController extends Controller
         $companies = \App\Models\Company::all();
         $paymentTypes = Booking::getPaymentTypeOptions();
 
-        if(auth()->user()->isSuperAdmin()) {
+        if (auth()->user()->isSuperAdmin()) {
             $supervisors = Supervisor::all();
         } else {
             $supervisors = Supervisor::where('user_id', Auth::id())->get();

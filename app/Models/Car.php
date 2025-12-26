@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class Car extends Model
 {
@@ -40,7 +40,7 @@ class Car extends Model
     /**
      * Get status badge color
      */
-    public static function getStatusColor(string $status = null): string
+    public static function getStatusColor(?string $status = null): string
     {
         return match ($status) {
             'parking' => 'secondary',
@@ -55,7 +55,7 @@ class Car extends Model
     /**
      * Get status icon
      */
-    public static function getStatusIcon(string $status = null): string
+    public static function getStatusIcon(?string $status = null): string
     {
         return match ($status) {
             'parking' => 'fa-parking',
@@ -74,6 +74,7 @@ class Car extends Model
     {
         $statuses = self::getStatusOptions();
         $status = $this->getCurrentStatus();
+
         return $statuses[$status] ?? $status ?? 'في الجراج';
     }
 
@@ -84,6 +85,7 @@ class Car extends Model
     {
         $color = self::getStatusColor($this->status);
         $icon = self::getStatusIcon($this->status);
+
         return sprintf(
             '<span class="badge badge-%s"><i class="fas %s mr-1"></i>%s</span>',
             $color,
@@ -122,7 +124,7 @@ class Car extends Model
             })
             ->exists();
 
-        return !$hasOverlappingBooking;
+        return ! $hasOverlappingBooking;
     }
 
     /**
@@ -138,17 +140,18 @@ class Car extends Model
         return $this->hasMany(Booking::class);
     }
 
-    //latest booking 
+    // latest booking
     public function latestBooking(): BelongsTo
     {
         return $this->belongsTo(Booking::class)->latest();
     }
+
     public function carType(): BelongsTo
     {
         return $this->belongsTo(CarType::class);
     }
 
-    //latest return booking
+    // latest return booking
     public function latestReturnBooking(): BelongsTo
     {
         return $this->belongsTo(Booking::class)->latest()->where('has_return', true);
@@ -159,9 +162,9 @@ class Car extends Model
      */
     public function getCurrentStatus(): string
     {
-        
+
         $from = Carbon::now();
-        $to = $from->addMinutes((int)$this->trip_duration ?? 0);
+        $to = $from->addMinutes((int) $this->trip_duration ?? 0);
 
         $hasActiveBooking = Booking::where(function ($query) use ($from, $to) {
             $query->where('booking_from', '<=', $from)

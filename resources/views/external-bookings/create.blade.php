@@ -10,7 +10,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="code.jquery.com"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
@@ -68,7 +68,7 @@
                                         <option value="">-- من --</option>
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}"
-                                                {{ old('departure_from_location_id') == $location->id ? 'selected' : '' }}>
+                                                {{ old('departure_from_location_id') == $location->id || $lastBooking->departure_from_location_id == $location->id ? 'selected' : '' }}>
                                                 {{ $location->name }}
                                             </option>
                                         @endforeach
@@ -91,7 +91,7 @@
                                         <option value="">-- إلى --</option>
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}"
-                                                {{ old('departure_to_location_id') == $location->id ? 'selected' : '' }}>
+                                                {{ old('departure_to_location_id') == $location->id || $lastBooking->departure_to_location_id == $location->id ? 'selected' : '' }}>
                                                 {{ $location->name }}
                                             </option>
                                         @endforeach
@@ -110,7 +110,7 @@
                                         <option value="" style="padding: 10px">-- اختر مدير الحركه --</option>
                                         @foreach ($supervisors as $supervisor)
                                             <option value="{{ $supervisor->id }}"
-                                                {{ old('supervisor_id') == $supervisor->id ? 'selected' : '' }}>
+                                                {{ old('supervisor_id') == $supervisor->id || $lastBooking->supervisor_id == $supervisor->id ? 'selected' : '' }}>
                                                 {{ $supervisor->name }}
                                             </option>
                                         @endforeach
@@ -126,7 +126,7 @@
                                         <option value="" style="padding: 10px">-- اختر العميل --</option>
                                         @foreach ($customers as $customer)
                                             <option value="{{ $customer->id }}"
-                                                {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
+                                                {{ old('customer_id') == $customer->id || $lastBooking->customer_id == $customer->id ? 'selected' : '' }}>
                                                 {{ $customer->name }}
                                             </option>
                                         @endforeach
@@ -148,7 +148,7 @@
                                         <option value="">-- اختر نوع السيارة --</option>
                                         @foreach ($carTypes as $type)
                                             <option value="{{ $type->id }}"
-                                                {{ old('car_type_id') == $type->id ? 'selected' : '' }}>
+                                                {{ old('car_type_id') == $type->id || $lastBooking->car_type_id == $type->id ? 'selected' : '' }}>
                                                 {{ $type->name }}
                                             </option>
                                         @endforeach
@@ -167,7 +167,7 @@
                                         class="form-control @error('payment_type') is-invalid @enderror" required>
                                         @foreach ($paymentTypes as $key => $label)
                                             <option value="{{ $key }}"
-                                                {{ old('payment_type', 'cash') == $key ? 'selected' : '' }}>
+                                                {{ old('payment_type', 'cash') == $key || $lastBooking->payment_type == $key ? 'selected' : '' }}>
                                                 {{ $label }}
                                             </option>
                                         @endforeach
@@ -184,7 +184,7 @@
 
                                     <input type="number" name="number_of_people" id="number_of_people"
                                         class="form-control @error('number_of_people') is-invalid @enderror"
-                                        value="{{ old('number_of_people') }}" min="1" placeholder="اكتب عدد الأفراد"
+                                        value="{{ old('number_of_people') || $lastBooking->number_of_people }}" min="1" placeholder="اكتب عدد الأفراد"
                                         required>
                                     @error('number_of_people')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -201,7 +201,7 @@
                                         <option value="">-- اختر السائق --</option>
                                         @foreach ($drivers as $driver)
                                             <option value="{{ $driver->id }}"
-                                                {{ old('driver_id') == $driver->id ? 'selected' : '' }}>
+                                                {{ old('driver_id') == $driver->id || $lastBooking->driver_id == $driver->id ? 'selected' : '' }}>
                                                 {{ $driver->name }}
                                             </option>
                                         @endforeach
@@ -220,7 +220,7 @@
 
                                     <input type="number" name="trip_duration" id="trip_duration"
                                         class="form-control @error('trip_duration') is-invalid @enderror"
-                                        value="{{ old('trip_duration') }}" min="1"
+                                        value="{{ old('trip_duration') || $lastBooking->trip_duration }}" min="1"
                                         placeholder="اكتب مدة التشغيلة" placeholder="مثال: 40 دقيقة" required>
                                     @error('trip_duration')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -237,7 +237,7 @@
                                         <option value="">-- اختر الشركة --</option>
                                         @foreach ($companies as $company)
                                             <option value="{{ $company->id }}"
-                                                {{ old('company_id') == $company->id ? 'selected' : '' }}>
+                                                {{ old('company_id') == $company->id || $lastBooking->company_id == $company->id ? 'selected' : '' }}>
                                                 {{ $company->name }}
                                             </option>
                                         @endforeach
@@ -252,7 +252,7 @@
 
                                     <input type="number" name="commission_for_driver" id="commission_for_driver"
                                         class="form-control @error('commission_for_driver') is-invalid @enderror"
-                                        value="{{ old('commission_for_driver') }}" step="0.01" min="0"
+                                        value="{{ old('commission_for_driver') || $lastBooking->commission_for_driver }}" step="0.01" min="0"
                                         placeholder="اكتب عمولة السائق" required>
                                     @error('commission_for_driver')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -265,7 +265,7 @@
 
                                     <input type="number" name="booking_price" id="booking_price"
                                         class="form-control @error('booking_price') is-invalid @enderror"
-                                        value="{{ old('booking_price') }}" step="0.01" min="0"
+                                        value="{{ old('booking_price') || $lastBooking->booking_price       }}" step="0.01" min="0"
                                         placeholder="اكتب سعر الحجز" required>
                                     @error('booking_price')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -282,7 +282,7 @@
                                         <option value="">-- اختر العملة --</option>
                                         @foreach ($currencies as $currency)
                                             <option value="{{ $currency->id }}"
-                                                {{ old('currency_id') == $currency->id ? 'selected' : '' }}>
+                                                {{ old('currency_id') == $currency->id || $lastBooking->currency_id == $currency->id ? 'selected' : '' }}>
                                                 {{ $currency->name }}
                                             </option>
                                         @endforeach
@@ -297,9 +297,14 @@
                             <div class="col-md-3">
                                 <div class="form-group">
 
+                                    @php
+                                        $bookingFromValue = old('booking_from')
+                                        ??now()->format('Y-m-d\TH:i:s');    
+                                    @endphp
+
                                     <input type="datetime-local" name="booking_from" id="booking_from"
                                         class="form-control @error('booking_from') is-invalid @enderror"
-                                        value="{{ old('booking_from') }}" required>
+                                        value="{{ $bookingFromValue }}" required>
                                     @error('booking_from')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -314,7 +319,7 @@
                                         <option value="" style="padding: 10px">-- اختر السيارة --</option>
                                         @foreach ($cars as $car)
                                             <option value="{{ $car->id }}"
-                                                {{ old('car_id') == $car->id ? 'selected' : '' }}>
+                                                {{ old('car_id') == $car->id || $lastBooking->car_id == $car->id ? 'selected' : '' }}>
                                                 {{ $car->plate_number }} - {{ $car->model }}
                                             </option>
                                         @endforeach
@@ -329,11 +334,13 @@
                         </div>
 
 
+                        
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group d-flex align-items-center" style="gap: 10px;">
                                     <input type="checkbox" name="has_return" id="has_return" id="has_return_checkbox"
                                         style="width: 1.3em; height: 1.3em;"
+                                        
                                         class="@error('has_return') is-invalid @enderror">
                                     <label for="has_return" class="mb-0">هل يوجد للحجز عودة <span
                                             class="text-danger">*</span></label>
@@ -343,6 +350,7 @@
                                 </div>
                             </div>
                         </div>
+                        {{-- @dd($lastBooking->has_return); --}}
                         <div id="return_section" >
                             <!-- قسم العودة -->
                             <h5 class="mb-3"
@@ -361,7 +369,7 @@
                                             <option value="">-- نفس السائق --</option>
                                             @foreach ($drivers as $driver)
                                                 <option value="{{ $driver->id }}"
-                                                    {{ old('return_driver_id') == $driver->id ? 'selected' : '' }}>
+                                                    {{ old('return_driver_id') == $driver->id || $lastBooking->return_driver_id == $driver->id ? 'selected' : '' }}>
                                                     {{ $driver->name }}
                                                 </option>
                                             @endforeach
@@ -377,6 +385,7 @@
                                         <label for="on_phone"> على الهاتف <span class="text-danger">*</span></label>
                                         <input type="checkbox" name="on_phone" id="on_phone"
                                             style="width: 1.3em; height: 1.3em;"
+                                            value="{{ $lastBooking->on_phone ? 'checked' : '' }}"
                                             class="@error('on_phone') is-invalid @enderror">
                                     </div>
                                     @error('on_phone')
@@ -387,9 +396,14 @@
                                 <div class="col-md-3">
                                     {{-- <div class="form-group"> --}}
 
+                                        @php
+                                            $bookingToValue = old('booking_to')
+                                                ??  now()->format('Y-m-d\TH:i:s')
+                                                ;
+                                        @endphp
                                         <input type="datetime-local" name="booking_to" id="booking_to"
                                             class="form-control @error('booking_to') is-invalid @enderror"
-                                            value="{{ old('booking_to') }}">
+                                            value="{{ old('booking_to') || $bookingToValue }}">
                                         @error('booking_to')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -402,7 +416,7 @@
 
                                         <input type="number" name="return_duration_minutes" id="return_duration_minutes"
                                             class="form-control @error('return_duration_minutes') is-invalid @enderror"
-                                            value="{{ old('return_duration_minutes') }}" min="1"
+                                            value="{{ old('return_duration_minutes') || $lastBooking->return_duration_minutes }}" min="1"
                                             placeholder="اكتب مدة العودة">
                                         @error('return_duration_minutes')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -417,7 +431,7 @@
                                             <option value="">-- اختر السيارة العودة --</option>
                                             @foreach ($cars as $car)
                                                 <option value="{{ $car->id }}"
-                                                    {{ old('return_car_id') == $car->id ? 'selected' : '' }}>
+                                                    {{ old('return_car_id') == $car->id || $lastBooking->return_car_id == $car->id ? 'selected' : '' }}>
                                                     {{ $car->plate_number }} - {{ $car->model }}
                                                 </option>
                                             @endforeach
@@ -438,7 +452,7 @@
                                             <option value="">-- من --</option>
                                             @foreach ($locations as $location)
                                                 <option value="{{ $location->id }}"
-                                                    {{ old('return_from_location_id') == $location->id ? 'selected' : '' }}>
+                                                    {{ old('return_from_location_id') == $location->id || $lastBooking->return_from_location_id == $location->id ? 'selected' : '' }}>
                                                     {{ $location->name }}
                                                 </option>
                                             @endforeach
@@ -459,7 +473,7 @@
                                             <option value="">-- إلى --</option>
                                             @foreach ($locations as $location)
                                                 <option value="{{ $location->id }}"
-                                                    {{ old('return_to_location_id') == $location->id ? 'selected' : '' }}>
+                                                    {{ old('return_to_location_id') == $location->id || $lastBooking->return_to_location_id == $location->id ? 'selected' : '' }}>
                                                     {{ $location->name }}
                                                 </option>
                                             @endforeach
@@ -617,6 +631,7 @@
                 returnSection.slideUp();
             }
         });
+        
     }
 });
    </script>

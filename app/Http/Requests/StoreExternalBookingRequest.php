@@ -22,70 +22,70 @@ class StoreExternalBookingRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-{
-    return [
-        'customer_id' => ['required', 'exists:customers,id'],
-        'car_id' => [
-            'required',
-            'exists:cars,id',
-            function ($attribute, $value, $fail) {
-                $bookingFrom = $this->input('booking_from');
-                $bookingTo = $this->input('booking_to');
+    {
+        return [
+            'customer_id' => ['required', 'exists:customers,id'],
+            'car_id' => [
+                'required',
+                'exists:cars,id',
+                function ($attribute, $value, $fail) {
+                    $bookingFrom = $this->input('booking_from');
+                    $bookingTo = $this->input('booking_to');
 
-                if (!$bookingFrom || !$bookingTo) {
-                    return;
-                }
-
-                if (Setting::get('enable_check_the_car_available', true)) {
-                    $overlappingBooking = Booking::where('car_id', $value)
-                        ->where(function ($query) use ($bookingFrom, $bookingTo) {
-                            $query->where(function ($q) use ($bookingFrom, $bookingTo) {
-                                $q->where('booking_from', '<=', $bookingFrom)
-                                  ->where('booking_to', '>', $bookingFrom);
-                            })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
-                                $q->where('booking_from', '<', $bookingTo)
-                                  ->where('booking_to', '>=', $bookingTo);
-                            })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
-                                $q->where('booking_from', '>=', $bookingFrom)
-                                  ->where('booking_from', '<', $bookingTo);
-                            });
-                        })
-                        ->exists();
-
-                    if ($overlappingBooking) {
-                        $fail('السيارة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
+                    if (! $bookingFrom || ! $bookingTo) {
+                        return;
                     }
-                }
-            },
-        ],
-        'car_type_id' => ['required', 'exists:car_types,id'],
-        'payment_type' => ['required'],
-        'number_of_people' => ['required', 'integer', 'min:1'],
-        'driver_id' => ['required', 'exists:drivers,id'],
-        'booking_from' => ['required', 'date'],
-        'trip_duration' => ['required', 'integer', 'min:1'],
-        'company_id' => ['required', 'exists:companies,id'],
-        'departure_from' => ['nullable', 'string', 'max:255'],
-        'departure_to' => ['nullable', 'string', 'max:255'],
-        'return_driver_id' => ['nullable', 'exists:drivers,id'],
-        'booking_to' => ['required', 'date', 'after:booking_from'],
-        'return_duration_minutes' => ['nullable', 'integer', 'min:1'],
-        'return_from' => ['nullable', 'string', 'max:255'],
-        'return_to' => ['nullable', 'string', 'max:255'],
-        'cost' => ['nullable', 'numeric', 'min:0'],
-        'booking_price' => ['required', 'numeric', 'min:0'],
-        'currency_id' => ['required', 'exists:currencies,id'],
-        'departure_from_location_id' => ['required'],
-        'departure_to_location_id' => ['required'],
-        'return_from_location_id' => ['nullable'],
-        'return_to_location_id' => ['nullable'],
-        'supervisor_id' => ['required', 'exists:supervisors,id'],
-        'commission_for_driver' => ['nullable', 'numeric', 'min:0'],
-        'return_car_id' => ['nullable', 'exists:cars,id'],
-        'has_return' => ['nullable',],
-        'on_phone' => ['nullable', ],
-    ];
-}
+
+                    if (Setting::get('enable_check_the_car_available', true)) {
+                        $overlappingBooking = Booking::where('car_id', $value)
+                            ->where(function ($query) use ($bookingFrom, $bookingTo) {
+                                $query->where(function ($q) use ($bookingFrom) {
+                                    $q->where('booking_from', '<=', $bookingFrom)
+                                        ->where('booking_to', '>', $bookingFrom);
+                                })->orWhere(function ($q) use ($bookingTo) {
+                                    $q->where('booking_from', '<', $bookingTo)
+                                        ->where('booking_to', '>=', $bookingTo);
+                                })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
+                                    $q->where('booking_from', '>=', $bookingFrom)
+                                        ->where('booking_from', '<', $bookingTo);
+                                });
+                            })
+                            ->exists();
+
+                        if ($overlappingBooking) {
+                            $fail('السيارة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
+                        }
+                    }
+                },
+            ],
+            'car_type_id' => ['required', 'exists:car_types,id'],
+            'payment_type' => ['required'],
+            'number_of_people' => ['required', 'integer', 'min:1'],
+            'driver_id' => ['required', 'exists:drivers,id'],
+            'booking_from' => ['required', 'date'],
+            'trip_duration' => ['required', 'integer', 'min:1'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'departure_from' => ['nullable', 'string', 'max:255'],
+            'departure_to' => ['nullable', 'string', 'max:255'],
+            'return_driver_id' => ['nullable', 'exists:drivers,id'],
+            'booking_to' => ['nullable', 'date', 'after:booking_from'],
+            'return_duration_minutes' => ['nullable', 'integer', 'min:1'],
+            'return_from' => ['nullable', 'string', 'max:255'],
+            'return_to' => ['nullable', 'string', 'max:255'],
+            'cost' => ['nullable', 'numeric', 'min:0'],
+            'booking_price' => ['required', 'numeric', 'min:0'],
+            'currency_id' => ['required', 'exists:currencies,id'],
+            'departure_from_location_id' => ['required'],
+            'departure_to_location_id' => ['required'],
+            'return_from_location_id' => ['nullable'],
+            'return_to_location_id' => ['nullable'],
+            'supervisor_id' => ['required', 'exists:supervisors,id'],
+            'commission_for_driver' => ['nullable', 'numeric', 'min:0'],
+            'return_car_id' => ['nullable', 'exists:cars,id'],
+            'has_return' => ['nullable'],
+            'on_phone' => ['nullable'],
+        ];
+    }
 
     /**
      * Get custom attributes for validator errors.

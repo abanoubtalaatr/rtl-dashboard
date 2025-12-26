@@ -1,28 +1,28 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CarController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\DriverController;
-use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\CarExpenseController;
 use App\Http\Controllers\CarTypeController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\LocationController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RetrievedController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\CarExpenseController;
-use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\DriverController;
 use App\Http\Controllers\DriverSalaryController;
-use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExternalBookingController;
+use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InternalBookingController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\RetrievedController;
+use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
     // Cars Resource Routes
     Route::resource('cars', CarController::class);
     Route::patch('/cars/{car}/update-status', [CarController::class, 'updateStatus'])
-    ->name('cars.update-status');
+        ->name('cars.update-status');
     Route::get('availability', [CarController::class, 'availability'])->name('cars.availability');
 
     // Car Expenses Resource Routes

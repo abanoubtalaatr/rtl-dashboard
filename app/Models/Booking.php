@@ -289,13 +289,14 @@ class Booking extends Model
         return $query->where(function ($q) {
             // Bookings WITH return: return time is in the future
             $q->where('has_return', true)
-                ->where('booking_to', '>', now())->where('returned',false);
+                ->where('booking_to', '>', now())->where('returned', false);
         })->orWhere(function ($q) {
             // Bookings WITHOUT return: outbound time is in the past
-            $q->where('has_return', false)->where('returned',false)
+            $q->where('has_return', false)->where('returned', false)
                 ->where('booking_from', '>', now());
         });
     }
+
     /**
      * Mark the booking as returned.
      */
