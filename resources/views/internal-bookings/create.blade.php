@@ -71,7 +71,7 @@
                                             <option value="">-- من --</option>
                                             @foreach ($locations as $location)
                                                 <option value="{{ $location->id }}"
-                                                    {{ old('departure_from_location_id') == $location->id || $lastBooking->departure_from_location_id == $location->id ? 'selected' : '' }}>
+                                                    {{ ($lastBooking && $lastBooking->departure_from_location_id == $location->id) || old('departure_from_location_id') == $location->id ? 'selected' : '' }}>
                                                     {{ $location->name }}
                                                 </option>
                                             @endforeach
