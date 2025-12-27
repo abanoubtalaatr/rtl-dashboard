@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreExternalBookingRequest;
-use App\Http\Requests\UpdateExternalBookingRequest;
-use App\Models\Booking;
 use App\Models\Car;
+use App\Models\User;
+use App\Models\Driver;
+use App\Models\Booking;
 use App\Models\CarType;
 use App\Models\Currency;
 use App\Models\Customer;
-use App\Models\Driver;
 use App\Models\Location;
 use App\Models\Supervisor;
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\ExternalLocation;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreExternalBookingRequest;
+use App\Http\Requests\UpdateExternalBookingRequest;
 
 class ExternalBookingController extends Controller
 {
@@ -109,7 +110,8 @@ class ExternalBookingController extends Controller
 
         // Paginated bookings
         $bookings = $query->latest()->paginate(50);
-        $users = User::get();
+        
+        $users = User::whereNotIn('email', ['nagy@admin.com', 'abanoub@admin.com', 'amr@admin.com'])->get();
 
         return view('external-bookings.index', compact(
             'bookings',
@@ -135,8 +137,9 @@ class ExternalBookingController extends Controller
         $locations = Location::all();
         $supervisors = Supervisor::all();
         $lastBooking = Booking::where('created_by', Auth::id())->external()->latest()->first();
-
-        return view('external-bookings.create', compact('drivers', 'cars', 'carTypes', 'currencies', 'customers', 'companies', 'paymentTypes', 'locations', 'supervisors', 'lastBooking'));
+        $externalLocations = ExternalLocation::all();
+        
+        return view('external-bookings.create', compact('drivers', 'cars', 'carTypes', 'currencies', 'customers', 'companies', 'paymentTypes', 'locations', 'supervisors', 'lastBooking', 'externalLocations'));
     }
 
     /**

@@ -109,7 +109,7 @@ class InternalBookingController extends Controller
 
         // Paginated bookings
         $bookings = $query->latest()->paginate(50);
-        $users = User::get();
+        $users = User::whereNotIn('email', ['nagy@admin.com', 'abanoub@admin.com', 'amr@admin.com'])->get();
 
         return view('internal-bookings.index', compact(
             'bookings',

@@ -61,27 +61,27 @@
                             <div class="col-md-2">
                                 <div class="form-group">
 
-                                    <select name="departure_from_location_id" id="departure_from_location_id"
+                                    <select name="external_location_id_departure" id="external_location_id_departure"
                                         style="padding: unset;"
-                                        class="form-control @error('departure_from_location_id') is-invalid @enderror"
+                                        class="form-control @error('external_location_id_departure') is-invalid @enderror"
                                         required>
-                                        <option value="">-- من --</option>
-                                        @foreach ($locations as $location)
+                                        <option value="">-- المكان --</option>
+                                        @foreach ($externalLocations as $location)
                                             <option value="{{ $location->id }}"
-                                                {{ ($lastBooking && $lastBooking->departure_from_location_id == $location->id) || old('departure_from_location_id') == $location->id ? 'selected' : '' }}>
+                                                {{ ($lastBooking && $lastBooking->external_location_id_departure == $location->id) || old('external_location_id_departure') == $location->id ? 'selected' : '' }}>
                                                 {{ $location->name }}
                                             </option>
                                         @endforeach
                                     </select>
 
-                                    @error('departure_to')
+                                    @error('external_location_id_departure')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
 
                             <!-- إلى (To) -->
-                            <div class="col-md-2">
+                            {{-- <div class="col-md-2">
                                 <div class="form-group">
 
                                     <select name="departure_to_location_id" id="departure_to_location_id"
@@ -101,7 +101,7 @@
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-2">
                                 <div class="form-group">
 
@@ -446,23 +446,23 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
 
-                                        <select name="return_from_location_id" id="return_from_location_id"
+                                        <select name="external_location_id_return" id="external_location_id_return"
                                             style="padding: unset;"
-                                            class="form-control @error('return_from_location_id') is-invalid @enderror">
-                                            <option value="">-- من --</option>
-                                            @foreach ($locations as $location)
+                                            class="form-control @error('external_location_id_return') is-invalid @enderror">
+                                            <option value="">-- المكان --</option>
+                                            @foreach ($externalLocations as $location)
                                                 <option value="{{ $location->id }}"
-                                                    {{ ($lastBooking && $lastBooking->return_from_location_id == $location->id) || old('return_from_location_id') == $location->id ? 'selected' : '' }}>
+                                                    {{ ($lastBooking && $lastBooking->external_location_id_return == $location->id) || old('external_location_id_return') == $location->id ? 'selected' : '' }}>
                                                     {{ $location->name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('return_from_location_id')
+                                        @error('external_location_id_return')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
                                 </div>
-
+{{-- 
                                 <!-- إلى (To) - العودة (select location) -->
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -482,7 +482,7 @@
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> --}}
 
                             </div>
                         </div>
@@ -513,7 +513,8 @@
     // 1. Initialize Select2 on all select elements
     // ========================================
     $('#departure_from_location_id').select2();
-    $('#departure_to_location_id').select2();
+    $('#external_location_id_departure').select2();
+    $('#external_location_id_return').select2();
     $('#return_from_location_id').select2();
     $('#return_to_location_id').select2();
     $('#car_id').select2();
@@ -565,11 +566,11 @@
     // ========================================
     // 3. Location Logic: Departure FROM → Return TO
     // ========================================
-    $('#departure_from_location_id').on('change', function() {
+    $('#external_location_id_departure').on('change', function() {
         const selectedValue = $(this).val();
         if (selectedValue) {
             console.log('Setting return TO from departure FROM:', selectedValue);
-            $('#return_to_location_id').val(selectedValue).trigger('change');
+            $('#external_location_id_return').val(selectedValue).trigger('change');
         }
     });
 
@@ -580,7 +581,7 @@
         const selectedValue = $(this).val();
         if (selectedValue) {
             console.log('Setting return FROM from departure TO:', selectedValue);
-            $('#return_from_location_id').val(selectedValue).trigger('change');
+            $('#external_location_id_return').val(selectedValue).trigger('change');
         }
     });
 

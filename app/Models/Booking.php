@@ -49,6 +49,8 @@ class Booking extends Model
         'supervisor_id',
         'commission_for_driver',
         'on_phone',
+        'external_location_id_departure',
+        'external_location_id_return',
     ];
 
     /**
@@ -333,5 +335,21 @@ class Booking extends Model
     public function supervisor(): BelongsTo
     {
         return $this->belongsTo(Supervisor::class, 'supervisor_id');
+    }
+
+    /**
+     * Get the external location for the departure.
+     */
+    public function externalLocationDeparture(): BelongsTo
+    {
+        return $this->belongsTo(ExternalLocation::class, 'external_location_id_departure');
+    }
+
+    /**
+     * Get the external location for the return.
+     */
+    public function externalLocationReturn(): BelongsTo
+    {
+        return $this->belongsTo(ExternalLocation::class, 'external_location_id_return');
     }
 }

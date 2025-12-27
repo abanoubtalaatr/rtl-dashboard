@@ -115,7 +115,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th style="width: 40%; background-color: #f4f6f9;">من (From)</th>
-                                    <td>{{ $externalBooking->departureFromLocation->name ?? '-' }}</td>
+                                    <td>{{ $externalBooking->externalLocationDeparture->name ?? '-' }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -123,7 +123,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th style="width: 40%; background-color: #f4f6f9;">إلى (To)</th>
-                                    <td>{{ $externalBooking->departureToLocation->name ?? '-' }}</td>
+                                    <td>{{ $externalBooking->externalLocationDepartureTo->name ?? '-' }}</td>
                                 </tr>
                             </table>
                         </div>

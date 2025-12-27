@@ -389,6 +389,14 @@ return [
             'active' => ['locations*'],
         ],
 
+        // external locations
+        [
+            'text' => 'التشغيلات الخارجية',
+            'url' => 'external-locations',
+            'icon' => 'fas fa-fw fa-map-marked-alt',
+            'active' => ['external-locations*'],
+        ],
+
         // Retrieveds
         [
             'text' => 'المبالغ المستردة',
