@@ -66,7 +66,7 @@
                                 <input type="date" name="to_date" class="form-control" onchange="this.form.submit()"
                                        value="{{ request('to_date') }}">
                             </div>
-                            @if (Auth::user()->isSuperAdmin())
+                            @if (Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
                                 <div class="col-md-3">
                                     <select name="user_id" class="form-control" onchange="this.form.submit()">
                                         <option value="">كل المستخدمين</option>
