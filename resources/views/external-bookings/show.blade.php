@@ -115,7 +115,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th style="width: 40%; background-color: #f4f6f9;">من (From)</th>
-                                    <td>{{ $externalBooking->externalLocationDeparture->name ?? '-' }}</td>
+                                    <td>{{ $externalBooking->departureFromLocation->name ?? '-' }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -123,7 +123,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th style="width: 40%; background-color: #f4f6f9;">إلى (To)</th>
-                                    <td>{{ $externalBooking->externalLocationDepartureTo->name ?? '-' }}</td>
+                                    <td>{{ $externalBooking->departureToLocation->name ?? '-' }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -150,7 +150,7 @@
                                 </tr>
                                 <tr>
                                     <th style="background-color: #f4f6f9;">التاريخ والوقت</th>
-                                    <td>{{ $externalBooking->booking_to->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $externalBooking->booking_to?->format('Y-m-d H:i') ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th style="background-color: #f4f6f9;">مدة العودة</th>

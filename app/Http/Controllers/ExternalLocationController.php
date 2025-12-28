@@ -2,92 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreExternalLocationRequest;
-use App\Http\Requests\UpdateExternalLocationRequest;
-use App\Models\ExternalLocation;
 use Illuminate\Http\Request;
 
 class ExternalLocationController extends Controller
 {
     /**
-     * Display a listing of external locations.
+     * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = ExternalLocation::query();
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('address', 'like', "%{$search}%");
-        }
-
-        $externalLocations = $query->latest()->paginate(15);
-
-        return view('external-locations.index', compact('externalLocations'));
+        //
     }
 
     /**
-     * Show the form for creating a new external location.
+     * Show the form for creating a new resource.
      */
     public function create()
     {
-        $types = ExternalLocation::getTypeOptions();
-
-        return view('external-locations.create', compact('types'));
+        //
     }
 
     /**
-     * Store a newly created external location in storage.
+     * Store a newly created resource in storage.
      */
-    public function store(StoreExternalLocationRequest $request)
+    public function store(Request $request)
     {
-        ExternalLocation::create($request->validated());
-
-        return redirect()
-            ->route('external-locations.index')
-            ->with('success', 'تم إضافة الموقع الخارجي بنجاح');
+        //
     }
 
     /**
-     * Display the specified external location.
+     * Display the specified resource.
      */
-    public function show(ExternalLocation $externalLocation)
+    public function show(string $id)
     {
-        return view('external-locations.show', compact('externalLocation'));
+        //
     }
 
     /**
-     * Show the form for editing the specified external location.
+     * Show the form for editing the specified resource.
      */
-    public function edit(ExternalLocation $externalLocation)
+    public function edit(string $id)
     {
-        $types = ExternalLocation::getTypeOptions();
-
-        return view('external-locations.edit', compact('externalLocation', 'types'));
+        //
     }
 
     /**
-     * Update the specified external location in storage.
+     * Update the specified resource in storage.
      */
-    public function update(UpdateExternalLocationRequest $request, ExternalLocation $externalLocation)
+    public function update(Request $request, string $id)
     {
-        $externalLocation->update($request->validated());
-
-        return redirect()
-            ->route('external-locations.index')
-            ->with('success', 'تم تحديث الموقع الخارجي بنجاح');
+        //
     }
 
     /**
-     * Remove the specified external location from storage.
+     * Remove the specified resource from storage.
      */
-    public function destroy(ExternalLocation $externalLocation)
+    public function destroy(string $id)
     {
-        $externalLocation->delete();
-
-        return redirect()
-            ->route('external-locations.index')
-            ->with('success', 'تم حذف الموقع الخارجي بنجاح');
+        //
     }
 }

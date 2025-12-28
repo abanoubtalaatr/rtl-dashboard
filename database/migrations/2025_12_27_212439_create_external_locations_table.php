@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::create('external_locations', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // اسم الموقع الخارجي
-            $table->string('type')->default('hotel'); // hotel, landmark, airport, other
-            $table->text('address')->nullable();
             $table->timestamps();
         });
     }

@@ -19,7 +19,6 @@ use App\Http\Controllers\ExternalBookingController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InternalBookingController;
 use App\Http\Controllers\LocationController;
-use App\Http\Controllers\ExternalLocationController;
 use App\Http\Controllers\RetrievedController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\UserController;
@@ -79,9 +78,6 @@ Route::middleware('auth')->group(function () {
 
     // Locations Resource Routes (للتشغيلات)
     Route::resource('locations', LocationController::class);
-
-    // External Locations Resource Routes (المواقع الخارجية)
-    Route::resource('external-locations', ExternalLocationController::class);
 
     // Cars Resource Routes
     Route::resource('cars', CarController::class);
