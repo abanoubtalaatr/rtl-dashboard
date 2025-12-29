@@ -135,7 +135,7 @@
                                         <td>{{ $booking->booking_from?->format('Y-m-d H:i') ?? '-' }}</td>
                                         <td>
                                             {{ $booking->booking_to?->format('Y-m-d H:i') ?? '-' }}
-                                            @if($booking->booking_to->isPast())
+                                            @if($booking->booking_to?->isPast())
                                                 <br>
                                                 <span class="badge badge-danger">متأخر</span>
                                             @endif
