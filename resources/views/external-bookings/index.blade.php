@@ -28,7 +28,7 @@
                         </div>
                         @php
                             $query = \App\Models\Booking::external()->unreturned();
-                            if (!Auth::user()->isSuperAdmin()) {
+                            if (!Auth::user()->isAdmin()) {
                                 $query->where('created_by', Auth::id());
                             }
                             $count = $query->count();
@@ -66,7 +66,7 @@
                                 <input type="date" name="to_date" class="form-control" onchange="this.form.submit()"
                                        value="{{ request('to_date') }}">
                             </div>
-                            @if (Auth::user()->isSuperAdmin() || Auth::user()->isAdmin())
+                            @if (Auth::user()->isAdmin())
                                 <div class="col-md-3">
                                     <select name="user_id" class="form-control" onchange="this.form.submit()">
                                         <option value="">كل المستخدمين</option>

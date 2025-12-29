@@ -52,7 +52,7 @@ class User extends Authenticatable
      */
     public function isSuperAdmin(): bool
     {
-        return in_array($this->email, ['nagy@admin.com', 'abanoub@admin.com','mramr@admin.com']);
+        return in_array($this->email, ['nagy@admin.com', 'abanoub@admin.com',]);
     }
 
     /**
@@ -60,7 +60,7 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return in_array($this->email, ['nagy@admin.com', 'abanoub@admin.com', 'amr@admin.com']);
+        return in_array($this->email, ['nagy@admin.com', 'abanoub@admin.com', 'amr@admin.com', 'mramr@admin.com']);
     }
 
     /**

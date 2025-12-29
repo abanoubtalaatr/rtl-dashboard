@@ -446,6 +446,7 @@ return [
             'active' => ['supervisors*'],
         ],
 
+        
         // Reports Section (Super Admin Only)
         ['header' => 'التقارير (للمدير العام فقط)', 'can' => 'super_admin'],
 
@@ -490,7 +491,7 @@ return [
             'url' => 'reports/expenses',
             'icon' => 'fas fa-fw fa-money-bill-wave',
             'active' => ['expenses*'],
-            'can' => 'super_admin',
+            'can' => Auth::user()->email == 'mramr@admin.com' ? 'super_admin' : 'admin',
         ],
         // Incomes
         [

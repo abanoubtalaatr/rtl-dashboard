@@ -40,7 +40,7 @@ class ExternalBookingController extends Controller
             ->whereDate('booking_to', '<=', $toDate);
 
         // Permissions
-        if (! Auth::user()->isSuperAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             $query->where('created_by', Auth::id());
         }
         if ($request->filled('user_id')) {
@@ -180,7 +180,7 @@ class ExternalBookingController extends Controller
     public function show(Booking $externalBooking)
     {
         // التحقق من الصلاحيات
-        if (! Auth::user()->isSuperAdmin() && $externalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isAdmin() && $externalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بعرض هذا الحجز');
         }
 
@@ -206,7 +206,7 @@ class ExternalBookingController extends Controller
     public function edit(Booking $externalBooking)
     {
         // التحقق من الصلاحيات
-        if (! Auth::user()->isSuperAdmin() && $externalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isAdmin() && $externalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
@@ -240,7 +240,7 @@ class ExternalBookingController extends Controller
     public function update(UpdateExternalBookingRequest $request, Booking $externalBooking)
     {
         // التحقق من الصلاحيات
-        if (! Auth::user()->isSuperAdmin() && $externalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isAdmin() && $externalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
@@ -264,7 +264,7 @@ class ExternalBookingController extends Controller
     public function destroy(Booking $externalBooking)
     {
         // التحقق من الصلاحيات
-        if (! Auth::user()->isSuperAdmin() && $externalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isAdmin() && $externalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بحذف هذا الحجز');
         }
 
@@ -281,7 +281,7 @@ class ExternalBookingController extends Controller
     public function toggleReturn(Booking $externalBooking)
     {
         // التحقق من الصلاحيات
-        if (! Auth::user()->isSuperAdmin() && $externalBooking->created_by !== Auth::id()) {
+        if (! Auth::user()->isAdmin() && $externalBooking->created_by !== Auth::id()) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
@@ -317,7 +317,7 @@ class ExternalBookingController extends Controller
         ])->external()->unreturned();
 
         // إذا كان المستخدم ليس super admin، يشوف حجوزاته فقط
-        if (! Auth::user()->isSuperAdmin()) {
+        if (! Auth::user()->isAdmin()) {
             $query->where('created_by', Auth::id());
         }
 
