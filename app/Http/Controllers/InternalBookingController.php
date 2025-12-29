@@ -39,7 +39,7 @@ class InternalBookingController extends Controller
             ->whereDate('booking_to', '<=', $toDate);
 
         // Permissions
-        if (! Auth::user()->isSuperAdmin()) {
+        if (! Auth::user()->isSuperAdmin() || ! Auth::user()->isAdmin()) {
             $query->where('created_by', Auth::id());
         }
         if ($request->filled('user_id')) {
