@@ -149,10 +149,10 @@
                                 <!-- رقم الغرفة -->
                                 <div class="col-md-2">
                                     <div class="form-group">
-
+                                        
                                         <input type="text" name="room_name" id="room_name"
                                             class="form-control @error('room_name') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->room_name) || old('room_name') }}"
+                                            value="{{ optional($lastBooking)->room_name ?? old('room_name') }}"
                                             placeholder="اكتب رقم الغرفة" required>
                                         @error('room_name')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -185,7 +185,7 @@
 
                                         <input type="number" name="number_of_people" id="number_of_people"
                                             class="form-control @error('number_of_people') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->number_of_people) || old('number_of_people') }}"
+                                            value="{{ optional($lastBooking)->number_of_people ?? old('number_of_people') }}"
                                             min="1" placeholder="اكتب عدد الأفراد" required>
                                         @error('number_of_people')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -221,7 +221,7 @@
 
                                         <input type="number" name="trip_duration" id="trip_duration"
                                             class="form-control @error('trip_duration') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->trip_duration) || old('trip_duration') }}"
+                                            value="{{ optional($lastBooking)->trip_duration ?? old('trip_duration') }}"
                                             min="1" placeholder="اكتب مدة التشغيلة" required>
                                         @error('trip_duration')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -251,11 +251,10 @@
 
                                 <div class="col-md-2">
                                     <div class="form-group">
-
+                                        
                                         <input type="number" name="commission_for_driver" id="commission_for_driver"
                                             class="form-control @error('commission_for_driver') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->commission_for_driver) || old('commission_for_driver') }}"
-                                            step="0.01" min="0" placeholder="اكتب عمولة السائق" required>
+                                            value="{{ optional($lastBooking)->commission_for_driver ?? old('commission_for_driver') }}">
                                         @error('commission_for_driver')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror
@@ -266,8 +265,7 @@
                                     <div class="form-group">
                                         <input type="number" name="booking_price" id="booking_price"
                                             class="form-control @error('booking_price') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->booking_price) || old('booking_price') }}"
-                                            step="0.01" min="0" placeholder="اكتب سعر الحجز" required>
+                                            value="{{ optional($lastBooking)->booking_price ?? old('booking_price') }}">
                                         @error('booking_price')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                         @enderror

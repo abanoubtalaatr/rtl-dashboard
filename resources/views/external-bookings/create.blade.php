@@ -65,7 +65,7 @@
                                         style="padding: unset;"
                                         class="form-control @error('departure_from_location_id') is-invalid @enderror"
                                         required>
-                                        <option value="">-- المكان --</option>
+                                        <option value="">-- التشغيلة --</option>
                                         @foreach ($locations as $location)
                                             <option value="{{ $location->id }}"
                                                 {{ ($lastBooking && $lastBooking->departure_from_location_id == $location->id) || old('departure_from_location_id') == $location->id ? 'selected' : '' }}>
@@ -184,8 +184,7 @@
 
                                     <input type="number" name="number_of_people" id="number_of_people"
                                         class="form-control @error('number_of_people') is-invalid @enderror"
-                                        value="{{ ($lastBooking && $lastBooking->number_of_people) || old('number_of_people') }}" min="1" placeholder="اكتب عدد الأفراد"
-                                        required>
+                                        value="{{ optional($lastBooking)->number_of_people ?? old('number_of_people') }}" min="1">
                                     @error('number_of_people')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -220,8 +219,8 @@
 
                                     <input type="number" name="trip_duration" id="trip_duration"
                                         class="form-control @error('trip_duration') is-invalid @enderror"
-                                        value="{{ ($lastBooking && $lastBooking->trip_duration) || old('trip_duration') }}" min="1"
-                                        placeholder="اكتب مدة التشغيلة" placeholder="مثال: 40 دقيقة" required>
+                                        value="{{ optional($lastBooking)->trip_duration ?? old('trip_duration') }}" min="1"
+                                        >
                                     @error('trip_duration')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -252,8 +251,7 @@
 
                                     <input type="number" name="commission_for_driver" id="commission_for_driver"
                                         class="form-control @error('commission_for_driver') is-invalid @enderror"
-                                        value="{{ ($lastBooking && $lastBooking->commission_for_driver) || old('commission_for_driver') }}" step="0.01" min="0"
-                                        placeholder="اكتب عمولة السائق" required>
+                                        value="{{ optional($lastBooking)->commission_for_driver ?? old('commission_for_driver') }}">
                                     @error('commission_for_driver')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -265,7 +263,7 @@
 
                                     <input type="number" name="booking_price" id="booking_price"
                                         class="form-control @error('booking_price') is-invalid @enderror"
-                                        value="{{ ($lastBooking && $lastBooking->booking_price) || old('booking_price') }}" step="0.01" min="0"
+                                        value="{{ optional($lastBooking)->booking_price ?? old('booking_price') }}" step="0.01" min="0"
                                         placeholder="اكتب سعر الحجز" required>
                                     @error('booking_price')
                                         <span class="invalid-feedback">{{ $message }}</span>
@@ -449,7 +447,7 @@
                                         <select name="return_from_location_id" id="return_from_location_id"
                                             style="padding: unset;"
                                             class="form-control @error('return_from_location_id') is-invalid @enderror">
-                                            <option value="">-- المكان --</option>
+                                            <option value="">-- التشغيلة --</option>
                                             @foreach ($locations as $location)
                                                 <option value="{{ $location->id }}"
                                                     {{ ($lastBooking && $lastBooking->return_from_location_id == $location->id) || old('return_from_location_id') == $location->id ? 'selected' : '' }}>
