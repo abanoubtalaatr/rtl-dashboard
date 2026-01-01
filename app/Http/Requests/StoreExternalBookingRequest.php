@@ -68,7 +68,7 @@ class StoreExternalBookingRequest extends FormRequest
             'departure_from' => ['nullable', 'string', 'max:255'],
             'departure_to' => ['nullable', 'string', 'max:255'],
             'return_driver_id' => ['nullable', 'exists:drivers,id'],
-            'booking_to' => ['nullable', 'date', 'after:booking_from'],
+            'booking_to' => ['nullable'],
             'return_duration_minutes' => ['nullable', 'integer', 'min:1'],
             'return_from' => ['nullable', 'string', 'max:255'],
             'return_to' => ['nullable', 'string', 'max:255'],
