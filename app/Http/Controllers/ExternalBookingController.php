@@ -52,7 +52,8 @@ class ExternalBookingController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->whereHas('customer', fn ($q) => $q->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('driver', fn ($q) => $q->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('driver', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('returnDriver', fn ($q) => $q->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -148,6 +149,7 @@ class ExternalBookingController extends Controller
     public function store(StoreExternalBookingRequest $request)
     {
 
+        
         $data = $request->validated();
         $data['type'] = 'external';
         $data['created_by'] = Auth::id();
@@ -249,6 +251,16 @@ class ExternalBookingController extends Controller
         // إذا لم يتم تحديد return_driver_id، نستخدم نفس السائق
         if (! isset($data['return_driver_id'])) {
             $data['return_driver_id'] = $data['driver_id'];
+        }
+        if ($request->has_return == 'on') {
+            $data['has_return'] = true;
+        } else {
+            $data['has_return'] = false;
+        }
+        if ($request->on_phone == 'on') {
+            $data['on_phone'] = true;
+        } else {
+            $data['on_phone'] = false;
         }
 
         $externalBooking->update($data);

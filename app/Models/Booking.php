@@ -289,13 +289,15 @@ class Booking extends Model
     public function scopeUnreturned($query)
     {
         return $query->where(function ($q) {
-            // Bookings WITH return: return time is in the future
+            // Case 1: Bookings WITH return → return time still in the future
             $q->where('has_return', true)
-                ->where('booking_to', '>', now())->where('returned', false);
+                ->where('returned', false)
+                ->where('booking_to', '>', now());
         })->orWhere(function ($q) {
-            // Bookings WITHOUT return: outbound time is in the past
-            $q->where('has_return', false)->where('returned', false)
-                ->where('booking_from', '>', now());
+            // Case 2: Bookings WITHOUT return → outbound has started AND not manually returned
+            $q->where('has_return', true)
+                ->where('returned', false)
+                ->where('booking_from', '<=', now());  // ← Fixed: started already
         });
     }
 

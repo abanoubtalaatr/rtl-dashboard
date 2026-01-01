@@ -80,28 +80,6 @@
                                 </div>
                             </div>
 
-                            <!-- إلى (To) -->
-                            {{-- <div class="col-md-2">
-                                <div class="form-group">
-
-                                    <select name="departure_to_location_id" id="departure_to_location_id"
-                                        style="padding: unset;"
-                                        class="form-control @error('departure_to_location_id') is-invalid @enderror"
-                                        required>
-                                        <option value="">-- إلى --</option>
-                                        @foreach ($locations as $location)
-                                            <option value="{{ $location->id }}"
-                                                {{ ($lastBooking && $lastBooking->departure_to_location_id == $location->id) || old('departure_to_location_id') == $location->id ? 'selected' : '' }}>
-                                                {{ $location->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-
-                                    @error('departure_to')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div> --}}
                             <div class="col-md-2">
                                 <div class="form-group">
 
@@ -296,8 +274,7 @@
                                 <div class="form-group">
 
                                     @php
-                                        $bookingFromValue = old('booking_from')
-                                        ??now()->format('Y-m-d\TH:i:s');
+                                        $bookingFromValue = old('booking_from') ?? now()->format('Y-m-d\TH:i');
                                     @endphp
 
                                     <input type="datetime-local" name="booking_from" id="booking_from"
@@ -336,9 +313,9 @@
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group d-flex align-items-center" style="gap: 10px;">
-                                    <input type="checkbox" name="has_return" id="has_return" id="has_return_checkbox"
+                                    <input type="checkbox" name="has_return" id="has_return"
                                         style="width: 1.3em; height: 1.3em;"
-                                        
+                                        {{ ($lastBooking && $lastBooking->has_return) ? 'checked' : '' }}
                                         class="@error('has_return') is-invalid @enderror">
                                     <label for="has_return" class="mb-0">هل يوجد للحجز عودة <span
                                             class="text-danger">*</span></label>
@@ -348,8 +325,8 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- @dd($lastBooking->has_return); --}}
-                        <div id="return_section" >
+
+                        <div id="return_section" style="display: {{ ($lastBooking && $lastBooking->has_return) ? 'block' : 'none' }};">
                             <!-- قسم العودة -->
                             <h5 class="mb-3"
                                 style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 15px; border-radius: 8px;">
@@ -383,7 +360,7 @@
                                         <label for="on_phone"> على الهاتف <span class="text-danger">*</span></label>
                                         <input type="checkbox" name="on_phone" id="on_phone"
                                             style="width: 1.3em; height: 1.3em;"
-                                            value="{{ ($lastBooking && $lastBooking->on_phone) ? 'checked' : '' }}"
+                                            {{ ($lastBooking && $lastBooking->on_phone) ? 'checked' : '' }}
                                             class="@error('on_phone') is-invalid @enderror">
                                     </div>
                                     @error('on_phone')
@@ -392,20 +369,15 @@
                                 </div>
                                 <!-- التاريخ والوقت للعودة -->
                                 <div class="col-md-3">
-                                    {{-- <div class="form-group"> --}}
-
-                                        @php
-                                            $bookingToValue = old('booking_to')
-                                                ??  now()->format('Y-m-d\TH:i:s')
-                                                ;
-                                        @endphp
-                                        <input type="datetime-local" name="booking_to" id="booking_to"
-                                            class="form-control @error('booking_to') is-invalid @enderror"
-                                            value="{{ old('booking_to') || $bookingToValue }}">
-                                        @error('booking_to')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
-                                    {{-- </div> --}}
+                                    @php
+                                        $bookingToValue = old('booking_to') ?? now()->format('Y-m-d\TH:i');
+                                    @endphp
+                                    <input type="datetime-local" name="booking_to" id="booking_to"
+                                        class="form-control @error('booking_to') is-invalid @enderror"
+                                        value="{{ $bookingToValue }}">
+                                    @error('booking_to')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
                                 </div>
 
                                 <!-- مدة العودة (Length of Return) -->
@@ -414,7 +386,7 @@
 
                                         <input type="number" name="return_duration_minutes" id="return_duration_minutes"
                                             class="form-control @error('return_duration_minutes') is-invalid @enderror"
-                                            value="{{ ($lastBooking && $lastBooking->return_duration_minutes) || old('return_duration_minutes') }}" min="1"
+                                            value="{{ ($lastBooking && $lastBooking->return_duration_minutes) ? $lastBooking->return_duration_minutes : old('return_duration_minutes') }}" min="1"
                                             placeholder="اكتب مدة العودة">
                                         @error('return_duration_minutes')
                                             <span class="invalid-feedback">{{ $message }}</span>
@@ -460,27 +432,6 @@
                                         @enderror
                                     </div>
                                 </div>
-{{-- 
-                                <!-- إلى (To) - العودة (select location) -->
-                                <div class="col-md-3">
-                                    <div class="form-group">
-
-                                        <select name="return_to_location_id" id="return_to_location_id"
-                                            style="padding: unset;"
-                                            class="form-control @error('return_to_location_id') is-invalid @enderror">
-                                            <option value="">-- إلى --</option>
-                                            @foreach ($locations as $location)
-                                                <option value="{{ $location->id }}"
-                                                    {{ ($lastBooking && $lastBooking->return_to_location_id == $location->id) || old('return_to_location_id') == $location->id ? 'selected' : '' }}>
-                                                    {{ $location->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('return_to_location_id')
-                                            <span class="invalid-feedback">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                </div> --}}
 
                             </div>
                         </div>
@@ -507,131 +458,144 @@
 
    <script>
     $(document).ready(function() {
-    // ========================================
-    // 1. Initialize Select2 on all select elements
-    // ========================================
-    $('#departure_from_location_id').select2();
-    $('#external_location_id_departure').select2();
-    $('#external_location_id_return').select2();
-    $('#return_from_location_id').select2();
-    $('#return_to_location_id').select2();
-    $('#car_id').select2();
-    $('#return_car_id').select2();
-    $('#driver_id').select2();
-    $('#supervisor_id').select2();
-    $('#return_driver_id').select2();
-    $('#car_type_id').select2();
+        // ========================================
+        // 1. Initialize Select2 on all select elements
+        // ========================================
+        $('#departure_from_location_id').select2();
+        $('#external_location_id_departure').select2();
+        $('#external_location_id_return').select2();
+        $('#return_from_location_id').select2();
+        $('#return_to_location_id').select2();
+        $('#car_id').select2();
+        $('#return_car_id').select2();
+        $('#driver_id').select2();
+        $('#supervisor_id').select2();
+        $('#return_driver_id').select2();
+        $('#car_type_id').select2();
 
-    // ========================================
-    // 2. Calculate end time based on start time and duration
-    // ========================================
-    const bookingFromInput = document.getElementById('booking_from');
-    const tripDurationInput = document.getElementById('trip_duration');
-    const bookingToInput = document.getElementById('booking_to');
+        // ========================================
+        // 2. Initialize return_driver_id on page load
+        // ========================================
+        const lastBookingReturnDriverId = '{{ optional($lastBooking)->return_driver_id ?? "" }}';
+        const driverIdValue = $('#driver_id').val();
+        
+        // Set return driver on page load
+        if (lastBookingReturnDriverId) {
+            // If lastBooking has return_driver_id, use it
+            $('#return_driver_id').val(lastBookingReturnDriverId).trigger('change');
+        } else if (driverIdValue) {
+            // Otherwise, use the current driver_id value
+            $('#return_driver_id').val(driverIdValue).trigger('change');
+        }
 
-    function calculateEndTime() {
-        if (bookingFromInput.value && tripDurationInput.value) {
-            const startTime = new Date(bookingFromInput.value);
-            const duration = parseInt(tripDurationInput.value);
+        // ========================================
+        // 3. Sync booking_to with booking_from on page load and on change
+        // ========================================
+        function syncBookingTo() {
+            const bookingFromValue = $('#booking_from').val();
+            if (bookingFromValue) {
+                $('#booking_to').val(bookingFromValue);
+            }
+        }
 
-            if (!isNaN(startTime.getTime()) && duration > 0) {
-                startTime.setMinutes(startTime.getMinutes() + duration);
+        // Sync on page load
+        syncBookingTo();
 
-                // Format date for datetime-local (YYYY-MM-DDTHH:mm)
-                const year = startTime.getFullYear();
-                const month = String(startTime.getMonth() + 1).padStart(2, '0');
-                const day = String(startTime.getDate()).padStart(2, '0');
-                const hours = String(startTime.getHours()).padStart(2, '0');
-                const minutes = String(startTime.getMinutes()).padStart(2, '0');
+        // Sync when booking_from changes
+        $('#booking_from').on('change', function() {
+            syncBookingTo();
+        });
 
-                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+        // ========================================
+        // 4. Update return_driver_id when driver_id changes
+        // ========================================
+        $('#driver_id').on('change', function() {
+            const selectedDriverId = $(this).val();
+            if (selectedDriverId) {
+                $('#return_driver_id').val(selectedDriverId).trigger('change');
+            }
+        });
 
-                // Set return start time
-                if (!bookingToInput.value) {
+        // ========================================
+        // 5. Calculate end time based on start time and duration
+        // ========================================
+        const bookingFromInput = document.getElementById('booking_from');
+        const tripDurationInput = document.getElementById('trip_duration');
+        const bookingToInput = document.getElementById('booking_to');
+
+        function calculateEndTime() {
+            if (bookingFromInput.value && tripDurationInput.value) {
+                const startTime = new Date(bookingFromInput.value);
+                const duration = parseInt(tripDurationInput.value);
+
+                if (!isNaN(startTime.getTime()) && duration > 0) {
+                    startTime.setMinutes(startTime.getMinutes() + duration);
+
+                    // Format date for datetime-local (YYYY-MM-DDTHH:mm)
+                    const year = startTime.getFullYear();
+                    const month = String(startTime.getMonth() + 1).padStart(2, '0');
+                    const day = String(startTime.getDate()).padStart(2, '0');
+                    const hours = String(startTime.getHours()).padStart(2, '0');
+                    const minutes = String(startTime.getMinutes()).padStart(2, '0');
+
+                    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                    // Set return start time
                     bookingToInput.value = formattedDate;
                 }
             }
         }
-    }
 
-    if (bookingFromInput) {
-        bookingFromInput.addEventListener('change', calculateEndTime);
-    }
-    if (tripDurationInput) {
-        tripDurationInput.addEventListener('input', calculateEndTime);
-    }
-
-    // ========================================
-    // 3. Location Logic: Departure FROM → Return TO
-    // ========================================
-    $('#departure_from_location_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return TO from departure FROM:', selectedValue);
-            $('#return_from_location_id').val(selectedValue).trigger('change');
+        if (bookingFromInput) {
+            bookingFromInput.addEventListener('change', calculateEndTime);
         }
-    });
-
-    // ========================================
-    // 4. Location Logic: Departure TO → Return FROM
-    // ========================================
-    $('#departure_to_location_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return FROM from departure TO:', selectedValue);
-            $('#external_location_id_return').val(selectedValue).trigger('change');
-        }
-    });
-
-    // ========================================
-    // 5. Car Logic: Same car for return
-    // ========================================
-    $('#car_id').on('change', function() {
-        const selectedValue = $(this).val();
-        if (selectedValue) {
-            console.log('Setting return car:', selectedValue);
-            $('#return_car_id').val(selectedValue).trigger('change');
-        }
-    });
-
-    // ========================================
-    // 6. Driver Logic: Copy driver to return driver
-    // ========================================
-    $('#driver_id').on('change', function() {
-        const selectedValue = $(this).val();
-        const returnDriverValue = $('#return_driver_id').val();
-        
-        // Only set if return driver is empty
-        if (selectedValue && !returnDriverValue) {
-            console.log('Setting return driver:', selectedValue);
-            $('#return_driver_id').val(selectedValue).trigger('change');
-        }
-    });
-
-    // ========================================
-    // 7. Toggle Return Section based on checkbox
-    // ========================================
-    const hasReturnCheckbox = $('#has_return');
-    const returnSection = $('#return_section');
-
-    if (hasReturnCheckbox.length && returnSection.length) {
-        // Set initial state
-        if (hasReturnCheckbox.is(':checked')) {
-            returnSection.show();
-        } else {
-            returnSection.hide();
+        if (tripDurationInput) {
+            tripDurationInput.addEventListener('input', calculateEndTime);
         }
 
-        // Handle checkbox change
-        hasReturnCheckbox.on('change', function() {
-            if ($(this).is(':checked')) {
-                returnSection.slideDown();
-            } else {
-                returnSection.slideUp();
+        // ========================================
+        // 6. Location Logic: Departure FROM → Return TO
+        // ========================================
+        $('#departure_from_location_id').on('change', function() {
+            const selectedValue = $(this).val();
+            if (selectedValue) {
+                $('#return_from_location_id').val(selectedValue).trigger('change');
             }
         });
-        
-    }
-});
+
+        // ========================================
+        // 7. Car Logic: Same car for return
+        // ========================================
+        $('#car_id').on('change', function() {
+            const selectedValue = $(this).val();
+            if (selectedValue) {
+                $('#return_car_id').val(selectedValue).trigger('change');
+            }
+        });
+
+        // ========================================
+        // 8. Toggle Return Section based on checkbox
+        // ========================================
+        const hasReturnCheckbox = $('#has_return');
+        const returnSection = $('#return_section');
+
+        if (hasReturnCheckbox.length && returnSection.length) {
+            // Set initial state
+            if (hasReturnCheckbox.is(':checked')) {
+                returnSection.show();
+            } else {
+                returnSection.hide();
+            }
+
+            // Handle checkbox change
+            hasReturnCheckbox.on('change', function() {
+                if ($(this).is(':checked')) {
+                    returnSection.slideDown();
+                } else {
+                    returnSection.slideUp();
+                }
+            });
+        }
+    });
    </script>
 @stop

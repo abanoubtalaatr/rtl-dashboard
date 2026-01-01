@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Booking;
+use App\Models\Setting;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateExternalBookingRequest extends FormRequest
@@ -16,46 +18,93 @@ class UpdateExternalBookingRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'customer_id' => 'required|exists:customers,id',
-            'car_id' => 'required|exists:cars,id',
-            'car_type_id' => 'required|exists:car_types,id',
-            'payment_type' => 'required|in:cash,visa,credit',
-            'number_of_people' => 'required|integer|min:1',
-            'driver_id' => 'required|exists:drivers,id',
-            'booking_from' => 'required|date',
-            'trip_duration' => 'required|integer|min:1',
-            'company_id' => 'required|exists:companies,id',
-            'departure_from' => 'nullable|string|max:255',
-            'departure_to' => 'nullable|string|max:255',
-            'return_driver_id' => 'nullable|exists:drivers,id',
-            'booking_to' => 'required|date|after:booking_from',
-            'return_duration_minutes' => 'required|integer|min:1',
-            'return_from' => 'nullable|string|max:255',
-            'return_to' => 'nullable|string|max:255',
-            'cost' => 'required|numeric|min:0',
-            'booking_price' => 'required|numeric|min:0',
-            'currency_id' => 'required|exists:currencies,id',
-            'departure_from_location_id' => 'nullable',
-            'departure_to_location_id' => 'nullable',
-            'return_from_location_id' => 'nullable',
-            'return_to_location_id' => 'nullable',
-            'supervisor_id' => 'required|exists:supervisors,id',
-            'commission_for_driver' => 'required|numeric|min:0',
-            'return_car_id' => 'nullable|exists:cars,id',
-            'has_return' => 'required|boolean',
+            'customer_id' => ['required', 'exists:customers,id'],
+            'car_id' => [
+                'required',
+                'exists:cars,id',
+                function ($attribute, $value, $fail) {
+                    $bookingFrom = $this->input('booking_from');
+                    $bookingTo = $this->input('booking_to');
+
+                    // Skip if dates are missing
+                    if (!$bookingFrom || !$bookingTo) {
+                        return;
+                    }
+
+                    if (Setting::get('enable_check_the_car_available', true)) {
+                        // Exclude the current booking itself from overlap check
+                        $query = Booking::where('car_id', $value)
+                            ->where('id', '!=', $this->route('external_booking')?->id) // adjust route parameter name if different
+                            ->where(function ($query) use ($bookingFrom, $bookingTo) {
+                                $query->where(function ($q) use ($bookingFrom) {
+                                    $q->where('booking_from', '<=', $bookingFrom)
+                                      ->where('booking_to', '>', $bookingFrom);
+                                })->orWhere(function ($q) use ($bookingTo) {
+                                    $q->where('booking_from', '<', $bookingTo)
+                                      ->where('booking_to', '>=', $bookingTo);
+                                })->orWhere(function ($q) use ($bookingFrom, $bookingTo) {
+                                    $q->where('booking_from', '>=', $bookingFrom)
+                                      ->where('booking_from', '<', $bookingTo);
+                                });
+                            });
+
+                        if ($query->exists()) {
+                            $fail('السيارة محجوزة بالفعل في هذا الوقت. يرجى اختيار وقت آخر.');
+                        }
+                    }
+                },
+            ],
+            'car_type_id' => ['required', 'exists:car_types,id'],
+            'payment_type' => ['required'],
+            'number_of_people' => ['required', 'integer', 'min:1'],
+            'driver_id' => ['required', 'exists:drivers,id'],
+            'booking_from' => ['required', 'date'],
+            'trip_duration' => ['required', 'integer', 'min:1'],
+            'company_id' => ['required', 'exists:companies,id'],
+            'departure_from' => ['nullable', 'string', 'max:255'],
+            'departure_to' => ['nullable', 'string', 'max:255'],
+            'return_driver_id' => ['nullable', 'exists:drivers,id'],
+            'booking_to' => ['nullable', 'date', 'after:booking_from'],
+            'return_duration_minutes' => ['nullable', 'integer', 'min:1'],
+            'return_from' => ['nullable', 'string', 'max:255'],
+            'return_to' => ['nullable', 'string', 'max:255'],
+            'cost' => ['nullable', 'numeric', 'min:0'],
+            'booking_price' => ['required', 'numeric', 'min:0'],
+            'currency_id' => ['required', 'exists:currencies,id'],
+            'departure_from_location_id' => ['nullable'],
+            'external_location_id_departure' => ['nullable', 'exists:external_locations,id'],
+            'external_location_id_return' => ['nullable', 'exists:external_locations,id'],
+            'departure_to_location_id' => ['nullable'],
+            'return_from_location_id' => ['nullable'],
+            'return_to_location_id' => ['nullable'],
+            'supervisor_id' => ['required', 'exists:supervisors,id'],
+            'commission_for_driver' => ['nullable', 'numeric', 'min:0'],
+            'return_car_id' => ['nullable', 'exists:cars,id'],
+            'has_return' => ['nullable'],
+            'on_phone' => ['nullable'],
         ];
     }
 
     /**
-     * Get custom attributes for validator errors.
-     *
-     * @return array<string, string>
+     * Configure the validator instance (for conditional rules if needed in future).
+     */
+    public function withValidator($validator): void
+    {
+        $validator->sometimes([
+            'booking_to',
+            'return_duration_minutes',
+            'return_driver_id',
+        ], 'required', function ($input) {
+            return $input->has_return == true || $input->has_return == 1;
+        });
+    }
+
+    /**
+     * Custom attribute names for error messages.
      */
     public function attributes(): array
     {
@@ -91,9 +140,7 @@ class UpdateExternalBookingRequest extends FormRequest
     }
 
     /**
-     * Get custom validation messages.
-     *
-     * @return array<string, string>
+     * Custom validation messages.
      */
     public function messages(): array
     {
