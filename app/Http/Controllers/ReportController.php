@@ -295,6 +295,7 @@ class ReportController extends Controller
                 // Get expenses for this car
                 $expensesQuery = CarExpense::where('car_id', $selectedCar->id);
 
+                // dd($expensesQuery->get());
                 // Apply date filters if provided
                 if ($request->filled('date_from')) {
                     $expensesQuery->whereDate('created_at', '>=', $request->date_from);
@@ -333,7 +334,7 @@ class ReportController extends Controller
 
                 // Calculate statistics
                 $statistics = [
-                    'total_expenses' => $expenses->sum('cost'),
+                    'total_expenses' => $expenses->sum('total_cost'),
                     'expense_count' => $expenses->count(),
                     'internal_revenue' => $internalBookings->sum('booking_price'),
                     'internal_count' => $internalBookings->count(),

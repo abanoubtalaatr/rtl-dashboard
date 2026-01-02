@@ -2,12 +2,15 @@
 
 @section('title', 'التقرير المالي للسيارات')
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 @section('content_header')
     <h1 class="m-0">
         <i class="fas fa-car-side text-info"></i>
         التقرير المالي للسيارات
     </h1>
 @stop
+
 
 @section('page_content')
     <div class="row">
@@ -25,7 +28,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="car_id">اختر السيارة <span class="text-danger">*</span></label>
-                                    <select name="car_id" id="car_id" class="form-control" required>
+                                    <select name="car_id" id="car_id" class="form-control" required style="padding: unset;">
                                         <option value="">-- اختر السيارة --</option>
                                         @foreach($cars as $car)
                                             <option value="{{ $car->id }}" {{ request('car_id') == $car->id ? 'selected' : '' }}>
@@ -222,18 +225,19 @@
                                                     <td>{{ $expense->id }}</td>
                                                     <td>{{ $expense->created_at->format('Y-m-d') }}</td>
                                                     <td>
-                                                        @if(is_array($expense->type))
-                                                            @foreach($expense->type as $typeKey)
+                                                        
+                                                        @if(is_array($expense->items))
+                                                            @foreach($expense->items as $item)
                                                                 @php
-                                                                    $typeOptions = \App\Models\CarExpense::getTypeOptions();
-                                                                    $typeLabel = $typeOptions[$typeKey] ?? $typeKey;
+                                                                    $typeLabel = $item['type'];
+                                                                    $cost = $item['cost'];
                                                                 @endphp
-                                                                <span class="badge badge-secondary">{{ $typeLabel }}</span>
+                                                                <span class="badge badge-secondary">{{ \App\Models\CarExpense::translateType($typeLabel) }} <strong>{{ number_format($cost, 2) }}</strong></span>
                                                             @endforeach
                                                         @endif
                                                     </td>
                                                     <td>{{ $expense->description ?? '-' }}</td>
-                                                    <td class="text-danger"><strong>{{ number_format($expense->cost, 2) }}</strong></td>
+                                                    <td class="text-danger"><strong>{{ number_format($expense->total_cost, 2) }}</strong></td>
                                                 </tr>
                                             @empty
                                                 <tr>
@@ -348,7 +352,20 @@
         </div>
     </div>
 @stop
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@section('js')
+    <!-- Select2 JS - loaded only once -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-
+    <script>
+        $(document).ready(function() {
+            $('#car_id').select2({
+                placeholder: "-- اختر السيارة --",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
+@stop
 
 

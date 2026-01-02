@@ -74,4 +74,16 @@ class CarExpense extends Model
             ->map(fn ($key) => self::typeOptions()[$key] ?? $key)
             ->implode('، ');
     }
+    public static function translateType($type)
+    {
+        return match($type) {
+            'fuel' => 'وقود',
+            'spare_parts' => 'قطع غيار',
+            'oil_change' => 'غيار زيت',
+            'maintenance' => 'صيانة',
+            'expense_traffic' => 'مصاريف مرورية',
+            'traffic_fees' => 'كرتات مرورية',
+            'laundry' => 'غسيل',
+        };
+    }
 }
