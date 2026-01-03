@@ -341,7 +341,7 @@ class ReportController extends Controller
                     'external_revenue' => $externalBookings->sum('booking_price'),
                     'external_count' => $externalBookings->count(),
                     'total_revenue' => $internalBookings->sum('booking_price') + $externalBookings->sum('booking_price'),
-                    'net_profit' => ($internalBookings->sum('booking_price') + $externalBookings->sum('booking_price')) - $expenses->sum('cost'),
+                    'net_profit' => ($internalBookings->sum('booking_price') + $externalBookings->sum('booking_price')) - $expenses->sum('total_cost'),
                 ];
             }
         }
